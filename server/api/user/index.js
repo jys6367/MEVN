@@ -1,5 +1,4 @@
 const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
 const router = require('express').Router()
 
 const User = require("../../model/user")
@@ -18,28 +17,21 @@ router.post('/join', function (req, res, next) {
     });
 });
 
-passport.use(new LocalStrategy(
-    function (username, password, done) {
-        User.findOne({username: username}, function (err, user) {
-            if (err) {
-                return done(err);
-            }
-            if (!user) {
-                return done(null, false, {message: 'Incorrect username.'});
-            }
-            if (!user.validPassword(password)) {
-                return done(null, false, {message: 'Incorrect password.'});
-            }
-            return done(null, user);
-        });
-    }
-))
-
 /* GET user by ID. */
-router.post('/login', passport.authenticate('local', {
-    successRedirect: '/',
-    failureRedirect: '/login',
-    failureFlash: false
-}));
+router.post('/login', function (req, res) {
+    console.log(req.body);
+    passport.authenticate('local', function (err, user, info) {
+        console.log('err', err)
+        console.log('user', user)
+        console.log('info', info)
+        if (err || !user) return res.json(err || info)
+
+        req.logIn(user, function (err) {
+            if (err) return res.json(err);
+
+            return res.json("Success");
+        });
+    })(req, res);
+});
 
 module.exports = router;

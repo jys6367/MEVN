@@ -42,7 +42,16 @@ UserSchema.plugin(autoIncrement.plugin, {
     field: '_id'
 });
 
+// User.findById(_id, (err,result)=>{})
+UserSchema.static("findById", function(_id, callback){
+    return this.find({_id}, callback);
+})
+
+// result = new User().myMethod(arg1, arg2);
+UserSchema.method("myMethod", function(arg1, arg2){
+    return result;
+})
+
 let User = mongoose.model("User", UserSchema);
-// export default User;
 
 module.exports = User;

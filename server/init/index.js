@@ -10,7 +10,7 @@ function initMiddleware(app) {
 }
 
 function initSession(app) {
-    app.use(session({secret: "keyboard cat"}))
+    app.use(session ({secret: "!XV^&_H$VJ$CHS&"}))
 }
 
 function initAuth(app) {

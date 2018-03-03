@@ -26,6 +26,7 @@
     "nuxt": "^1.0.0-rc3",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
+    "require-context": "^1.0.4",
     "source-map-support": "^0.4.15",
     "vuetify": "^1.0.3"
   },
