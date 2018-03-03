@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-import autoIncrement from 'mongoose-auto-increment'
+const mongoose = require("mongoose");
+const autoIncrement = require('mongoose-auto-increment');
 
 const BoardSchema = mongoose.Schema({
     title: {
@@ -27,7 +27,4 @@ let Board = mongoose.model("Board", BoardSchema);
 // export default {
 //     Board
 // }
-export default {
-    Board
-
-}
+module.exports = Board;

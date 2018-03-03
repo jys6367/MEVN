@@ -60,7 +60,8 @@
 <script>
 
     import axios from '../../plugins/axios';
-    import {mapState} from 'vuex';
+    import {mapState, mapActions} from 'vuex';
+
 
     export default {
         data: () => ({
@@ -82,16 +83,15 @@
             return context.store.dispatch('board/getList');
         },
         methods: {
-            boardInit(){
-                this.$store.dispatch('board/getList');
-            },
+            ...mapActions("board",[
+                "getList"
+            ]),
             del(id) {
                 if (confirm('삭제하시겠습니까?')) {
                     axios.delete(`/api/board/${id}`).then((res) => {
-                        boardInit();
+                        this.getList();
                     })
                 }
-
             },
             editItem(item) {
                 this.editedItem = Object.assign({}, item)
@@ -100,11 +100,11 @@
             save() {
                 if (!this.editedItem._id) {
                     axios.post('/api/board/insert', this.editedItem).then(res => {
-                        boardInit();
+                        this.getList();
                     })
                 } else {
                     axios.put(`/api/board/${this.editedItem._id}`, this.editedItem).then(res => {
-                        boardInit();
+                        this.getList();
                     });
                 }
                 this.close();

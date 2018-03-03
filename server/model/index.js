@@ -1,23 +1,22 @@
-import mongoose from 'mongoose';
-import autoIncrement from 'mongoose-auto-increment';
+const mongoose  = require('mongoose');
+const autoIncrement = require('mongoose-auto-increment');
+const config = require("../config");
+//
+// function createSchema() {
+//     let db = {};
+//
+//     require("fs").readdirSync(__dirname).forEach(file => {
+//         if (file == 'index.js') return;
+//         let model = require(`./${file}`);
+//         db = {...db, ...model};
+//     })
+//
+//     return db;
+// }
 
-function createSchema() {
-    let db = {};
-
-    require("fs").readdirSync(__dirname).forEach(file => {
-        if (file == 'index.js') return;
-        let model = require(`./${file}`).default;
-        db = {...db, ...model};
-    })
-
-    return db;
-}
-
-function connect(app) {
-    mongoose.Promise = global.Promise;
-    mongoose.connect("mongodb://localhost/blog");
-
-    let db = mongoose.connection;
+function init(db) {
+    mongoose.connect(config.db.url);
+    db = mongoose.connection;
 
     autoIncrement.initialize(db);
 
@@ -26,12 +25,14 @@ function connect(app) {
     db.once('open', function () {
         console.log("Connected to mongo server");
     });
-
-    app.set('database', createSchema());
 }
 
-export default {
-    init(app) {
-        connect(app);
-    }
+module.exports = function () {
+    let db;
+
+    mongoose.Promise = global.Promise;
+
+    mongoose.connection.readyState === 1 || init(db);
+
+    return db;
 };

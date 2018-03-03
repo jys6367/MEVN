@@ -46,8 +46,8 @@
         methods: {
             submit() {
                 let param = {
-                    email : this.email,
-                    pwd : this.password
+                    username : this.email,
+                    password : this.password
                 }
 
                 axios.post("/api/user/login", param).then(({data})=>{

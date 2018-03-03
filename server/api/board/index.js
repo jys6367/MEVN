@@ -1,27 +1,21 @@
-import {Router} from "express";
+const router = require("express").Router()
 
-const router = Router();
-
+const Board = require("../../model/board");
 
 router.get("/getList", function (req, res) {
-    let database = req.app.get("database");
-    database.Board.find({}, function (err, data) {
+    Board.find({}, function (err, data) {
         res.json(data);
     })
 
 });
 
 router.get("/:id", function (req, res) {
-    console.log("Router");
-    let database = req.app.get("database");
-    database.Board.findOne({_id: req.params.id}, function (err, data) {
+    Board.findOne({_id: req.params.id}, function (err, data) {
         res.json(data);
     })
 });
 
 router.delete("/:id", function (req, res) {
-    let {Board} = req.app.get("database");
-
     Board.deleteOne({_id:req.params.id}, function(err){
         if(err){
             res.json(err);
@@ -33,7 +27,6 @@ router.delete("/:id", function (req, res) {
 });
 
 router.put("/:id", function (req, res) {
-    let {Board} = req.app.get("database");
     Board.update({_id:req.params.id}, req.body, function(err){
         if(err){
             res.json(err);
@@ -46,7 +39,6 @@ router.put("/:id", function (req, res) {
 
 router.post("/insert", function (req, res) {
     let body = req.body;
-    let {Board} = req.app.get("database");
     let board = new Board();
     board.title = body.title;
     board.content = body.content;
@@ -61,4 +53,4 @@ router.post("/insert", function (req, res) {
 })
 
 
-export default router;
+module.exports = router;

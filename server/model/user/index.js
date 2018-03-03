@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-import autoIncrement from 'mongoose-auto-increment'
+const mongoose = require("mongoose")
+const autoIncrement = require('mongoose-auto-increment');
 
 const UserSchema = mongoose.Schema({
     email: {
@@ -45,6 +45,4 @@ UserSchema.plugin(autoIncrement.plugin, {
 let User = mongoose.model("User", UserSchema);
 // export default User;
 
-export default {
-    User
-}
+module.exports = User;

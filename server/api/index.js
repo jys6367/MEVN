@@ -1,18 +1,30 @@
-import express from 'express'
+const express = require('express')
 
-const app = express();
+const utils = require("../utils");
 
-require("fs").readdirSync(__dirname).forEach(file=>{
-    if(file == 'index.js') return;
+function useApiAll(app) {
+    utils.getFiles(__dirname)
+        .filter(file => file !== "index.js")
+        .forEach(file => {
+            app.use(`/${file}`, require(`./${file}`));
+        })
+}
 
-    let route = require(`./${file}`)
+function routeNone(app) {
+    app.use(function (req, res) {
+        // 404
+        res.json("404_ERROR")
+    })
+}
 
-    app.use(`/${file}`, route.default);
-})
+function getApp() {
+    var app = express();
+    useApiAll(app);
+    routeNone(app);
 
+    return app;
+}
 
-app.use("/", function(req, res){
-    res.json("fail")
-})
-
-export default app
+module.exports = function (app) {
+    app.use("/api", getApp())
+}
