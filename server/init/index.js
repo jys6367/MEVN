@@ -5,7 +5,6 @@ const express = require('express');
 const config = require("../config");
 
 function initMiddleware(app) {
-    app.set("port", config.port);
     app.use(bodyParser.urlencoded({extended: true}));
     app.use(bodyParser.json());
 }

@@ -167,18 +167,6 @@ module.exports = User;
 var mongoose = __webpack_require__(9);
 var autoIncrement = __webpack_require__(10);
 var config = __webpack_require__(8);
-//
-// function createSchema() {
-//     let db = {};
-//
-//     require("fs").readdirSync(__dirname).forEach(file => {
-//         if (file == 'index.js') return;
-//         let model = require(`./${file}`);
-//         db = {...db, ...model};
-//     })
-//
-//     return db;
-// }
 
 function init(db) {
     mongoose.connect(config.db.url);
@@ -412,6 +400,7 @@ var app = __webpack_require__(20)();
 app.listen(config.port, config.host, function () {
     console.log("SERVER INIT");
 });
+
 console.log('Server listening on ' + config.host + ':' + config.port);
 
 /***/ }),
@@ -459,7 +448,6 @@ var express = __webpack_require__(1);
 var config = __webpack_require__(8);
 
 function initMiddleware(app) {
-    app.set("port", config.port);
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(bodyParser.json());
 }

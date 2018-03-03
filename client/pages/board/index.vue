@@ -64,6 +64,9 @@
 
 
     export default {
+        fetch(context) {
+            return context.store.dispatch('board/getList');
+        },
         data: () => ({
             editedItem: {},
             dialog: false,
@@ -79,9 +82,6 @@
         computed: mapState('board',[
             'boardList'
         ]),
-        fetch(context) {
-            return context.store.dispatch('board/getList');
-        },
         methods: {
             ...mapActions("board",[
                 "getList"

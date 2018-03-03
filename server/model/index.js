@@ -1,18 +1,6 @@
 const mongoose  = require('mongoose');
 const autoIncrement = require('mongoose-auto-increment');
 const config = require("../config");
-//
-// function createSchema() {
-//     let db = {};
-//
-//     require("fs").readdirSync(__dirname).forEach(file => {
-//         if (file == 'index.js') return;
-//         let model = require(`./${file}`);
-//         db = {...db, ...model};
-//     })
-//
-//     return db;
-// }
 
 function init(db) {
     mongoose.connect(config.db.url);
