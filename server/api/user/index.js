@@ -2,26 +2,28 @@ import { Router } from 'express'
 
 const router = Router()
 
-// Mock Users
-const users = [
-    {name: 'Alexandre'},
-    {name: 'Pooya'},
-    {name: 'Sébastien'}
-];
+router.post('/join', function (req, res, next) {
+    let {User} = req.app.get("database");
 
-/* GET user listing. */
-router.get('/getList', function (req, res, next) {
-    res.json(users)
+    new User({
+        ...req.body,
+        state: "REG",
+        userType : "NORMAL",
+        regDt : new Date()
+    }).save(err=>{
+        res.json({
+            status : !err,
+            message : err && err.message
+        });
+    });
 });
 
 /* GET user by ID. */
-router.get('/:id', function (req, res, next) {
-    const id = parseInt(req.params.id)
-    if (id >= 0 && id < users.length) {
-        res.json(users[id])
-    } else {
-        res.sendStatus(404)
-    }
+router.post('/login', function (req, res, next) {
+    let {User} = req.app.get("database");
+    User.find({email:req.body.email, pwd:req.body.pwd}, (err, result)=>{
+        res.json(err || result)
+    })
 });
 
-export default router
+export default router;

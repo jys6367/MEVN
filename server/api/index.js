@@ -1,13 +1,15 @@
 import express from 'express'
 
-import user from './user';
-import board from './board';
-
 const app = express();
 
-// Add USERS Routes
-app.use('/user', user);
-app.use('/board', board);
+require("fs").readdirSync(__dirname).forEach(file=>{
+    if(file == 'index.js') return;
+
+    let route = require(`./${file}`)
+
+    app.use(`/${file}`, route.default);
+})
+
 
 app.use("/", function(req, res){
     res.json("fail")

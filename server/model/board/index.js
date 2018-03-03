@@ -1,11 +1,7 @@
 import mongoose from "mongoose";
+import autoIncrement from 'mongoose-auto-increment'
 
-const Board = mongoose.Schema({
-    id: {
-        type: Number,
-        require: true,
-        unique: true
-    },
+const BoardSchema = mongoose.Schema({
     title: {
         type: String,
         required: true,
@@ -14,10 +10,24 @@ const Board = mongoose.Schema({
         type: String,
         required: true
     },
-    date: {
+    regDate :{
         type: Date,
-        default: Date.now
+        default : Date.now
     }
 });
 
-export default mongoose.model("board", Board);
+BoardSchema.plugin(autoIncrement.plugin, {
+    model: "Board",
+    startAt: 1,
+    field: '_id'
+});
+
+let Board = mongoose.model("Board", BoardSchema);
+
+// export default {
+//     Board
+// }
+export default {
+    Board
+
+}

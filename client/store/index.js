@@ -1,23 +1,11 @@
-import {Store} from 'vuex';
-
 import axios from "../plugins/axios";
 
-const store = () => new Store({
-    state: {
-        boardList: []
-    },
-    mutations: {
-        setBoardList(state, boardList) {
-            state.boardList = boardList;
-        }
-    },
-    actions: {
-        getList({commit}) {
-            return axios.get('/api/board/getList').then((res) => {
-                commit("setBoardList", res.data);
-            })
-        }
-    }
+
+export const state = () => ({
 });
 
-export default store;
+export const mutations = {
+}
+
+export const actions = {
+}

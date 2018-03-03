@@ -1,25 +1,33 @@
 import mongoose from 'mongoose';
+import autoIncrement from 'mongoose-auto-increment';
 
-import Board from "./board";
+function createSchema() {
+    let db = {};
 
-function createSchema(database) {
-    database.Board = Board;
+    require("fs").readdirSync(__dirname).forEach(file => {
+        if (file == 'index.js') return;
+        let model = require(`./${file}`).default;
+        db = {...db, ...model};
+    })
+
+    return db;
 }
 
 function connect(app) {
     mongoose.Promise = global.Promise;
-    mongoose.connect("mongodb://localhost/board");
+    mongoose.connect("mongodb://localhost/blog");
 
-    var db = mongoose.connection;
-    db.on('error', (e)=> console.log(e));
+    let db = mongoose.connection;
+
+    autoIncrement.initialize(db);
+
+    db.on('error', (e) => console.log(e));
 
     db.once('open', function () {
         console.log("Connected to mongo server");
     });
 
-    let database = {};
-    createSchema(database);
-    app.set('database', database);
+    app.set('database', createSchema());
 }
 
 export default {

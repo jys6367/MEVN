@@ -11,10 +11,10 @@
                     <v-container grid-list-md>
                         <v-layout wrap>
                             <v-flex xs12 sm6 md4>
-                                <v-text-field label="Dessert name" v-model="editedItem.title"></v-text-field>
+                                <v-text-field label="TITLE" v-model="editedItem.title"></v-text-field>
                             </v-flex>
                             <v-flex xs12 sm6 md4>
-                                <v-text-field label="Calories" v-model="editedItem.content"></v-text-field>
+                                <v-text-field label="CONTENT" v-model="editedItem.content"></v-text-field>
                             </v-flex>
 
                         </v-layout>
@@ -36,15 +36,15 @@
                 class="elevation-1"
         >
             <template slot="items" slot-scope="props">
-                <td class="text-xs-left">{{ props.item.id }}</td>
-                <td class="text-xs-left">{{ props.item.title }}</td>
+                <td class="text-xs-left">{{ props.item._id }}</td>
+                <td class="text-xs-left">{{ props.item.title}}</td>
                 <td class="text-xs-left">{{ props.item.content }}</td>
-                <td class="text-xs-left">{{ props.item.date }}</td>
+                <td class="text-xs-left">{{ props.item.regDate }}</td>
                 <td class="text-xs-left layout px-0">
                     <v-btn icon class="mx-0" @click="editItem(props.item)">
                         <v-icon color="teal">edit</v-icon>
                     </v-btn>
-                    <v-btn icon class="mx-0" @click="del(props.item.id)">
+                    <v-btn icon class="mx-0" @click="del(props.item._id)">
                         <v-icon color="pink">delete</v-icon>
                     </v-btn>
                 </td>
@@ -67,7 +67,7 @@
             editedItem: {},
             dialog: false,
             headers: [
-                {text: 'id', value: 'id'},
+                {text: 'id', value: '_id'},
                 {text: 'title', value: 'title'},
                 {text: 'content', value: 'content'},
                 {text: 'date', value: 'date'},
@@ -75,17 +75,20 @@
 
             ]
         }),
-        computed: mapState([
-            "boardList"
+        computed: mapState('board',[
+            'boardList'
         ]),
         fetch(context) {
-            return context.store.dispatch('getList');
+            return context.store.dispatch('board/getList');
         },
         methods: {
+            boardInit(){
+                this.$store.dispatch('board/getList');
+            },
             del(id) {
                 if (confirm('삭제하시겠습니까?')) {
                     axios.delete(`/api/board/${id}`).then((res) => {
-                        this.$store.dispatch('getList');
+                        boardInit();
                     })
                 }
 
@@ -95,15 +98,14 @@
                 this.dialog = true;
             },
             save() {
-                if (!this.editedItem.id) {
+                if (!this.editedItem._id) {
                     axios.post('/api/board/insert', this.editedItem).then(res => {
-                        this.$store.dispatch('getList');
+                        boardInit();
                     })
                 } else {
-                    axios.put(`/api/board/${this.editedItem.id}`, this.editedItem).then(res => {
-                        this.$store.dispatch('getList');
+                    axios.put(`/api/board/${this.editedItem._id}`, this.editedItem).then(res => {
+                        boardInit();
                     });
-
                 }
                 this.close();
 

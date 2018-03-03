@@ -3,8 +3,9 @@ import {Nuxt, Builder} from 'nuxt';
 import bodyParser from 'body-parser';
 
 import api from './api'
-
 import database from './model'
+import service from './service'
+
 
 const app = express()
 const host = process.env.HOST || '127.0.0.1'
@@ -35,6 +36,7 @@ app.use(nuxt.render)
 
 // Listen the server
 app.listen(port, host, function(){
+    console.log("SERVER INIT")
     database.init(app);
 })
 console.log('Server listening on ' + host + ':' + port) // eslint-disable-line no-console
