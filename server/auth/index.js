@@ -3,6 +3,11 @@ const passport = require('passport');
 const utils = require("../utils");
 const User = require("../model/user");
 
+function initPassport(app) {
+    app.use(passport.initialize());
+    app.use(passport.session());
+}
+
 function initAllStrategies() {
     utils.getFiles(`${__dirname}/strategies/`)
         .forEach(file => {
@@ -11,24 +16,21 @@ function initAllStrategies() {
 }
 
 function initSerialize() {
-    passport.serializeUser(function(user, done) {
-        done(null, {
-            _id : user._id,
-            email: user.email,
-            name: user.name
-        });
+
+    // done({}, user) => req.session.passport.user = user
+    passport.serializeUser(function (user, done) {
+        done(null, user.forClient());
     });
 
-    passport.deserializeUser(function(id, done) {
-        User.findById(id, function(err, user) {
+    passport.deserializeUser(function (user, done) {
+        User.findById(user._id, function (err, user) {
             done(err, user);
         });
     });
 }
 
-module.exports = function(app){
-    app.use(passport.initialize());
-    app.use(passport.session());
+module.exports = function (app) {
+    initPassport(app);
     initAllStrategies();
     initSerialize();
 }

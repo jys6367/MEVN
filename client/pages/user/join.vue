@@ -58,6 +58,7 @@
                 </v-card-actions>
             </v-card>
         </v-flex>
+        <nuxt-link :to="{path: 'login'}">로그인</nuxt-link>
     </v-layout>
 </template>
 
@@ -100,7 +101,6 @@
         methods: {
             submit() {
                 axios.post("/api/user/join", this.user).then(({data}) => {
-                    console.log(data);
                     if(!data.status) return alert(data.message);
                     this.$route.push({name:'board'});
                 })

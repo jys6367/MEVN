@@ -10,8 +10,6 @@ module.exports = function () {
         },
         function (email, pwd, done) {
             User.findOne({email, pwd}, function (err, user) {
-                console.log('err', err)
-                console.log('user', user)
                 if (err) {
                     return done(err);
                 }

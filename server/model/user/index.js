@@ -44,12 +44,20 @@ UserSchema.plugin(autoIncrement.plugin, {
 
 // User.findById(_id, (err,result)=>{})
 UserSchema.static("findById", function(_id, callback){
-    return this.find({_id}, callback);
+    return this.findOne({_id}, callback);
 })
 
 // result = new User().myMethod(arg1, arg2);
-UserSchema.method("myMethod", function(arg1, arg2){
-    return result;
+UserSchema.method("forClient", function(){
+    return {
+        _id : this._id,
+        email : this.email,
+        name: this.name,
+        birthDay : this.birthDay,
+        photo: this.photo,
+        userType : this.userType,
+        regDt : this.regDt,
+    };
 })
 
 let User = mongoose.model("User", UserSchema);

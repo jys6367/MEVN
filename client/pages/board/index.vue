@@ -62,7 +62,6 @@
     import axios from '../../plugins/axios';
     import {mapState, mapActions} from 'vuex';
 
-
     export default {
         fetch(context) {
             return context.store.dispatch('board/getList');
@@ -76,7 +75,6 @@
                 {text: 'content', value: 'content'},
                 {text: 'date', value: 'date'},
                 {text: 'Actions', value: 'name', sortable: false}
-
             ]
         }),
         computed: mapState('board',[

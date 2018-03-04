@@ -14,7 +14,10 @@ module.exports = {
             {rel: 'icon', type: 'image/x-icon', href: '/favicon.ico'},
             {rel: 'stylesheet', href: 'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons'}
         ]
-    }, 
+    },
+    router: {
+        middleware: "checkAuth"
+    },
     plugins: ['~/plugins/vuetify.js'],
     css: ['~/assets/style/app.styl'],
     // css: ['~/assets/css/main.css'],

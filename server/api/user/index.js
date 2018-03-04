@@ -19,19 +19,31 @@ router.post('/join', function (req, res, next) {
 
 /* GET user by ID. */
 router.post('/login', function (req, res) {
-    console.log(req.body);
     passport.authenticate('local', function (err, user, info) {
-        console.log('err', err)
-        console.log('user', user)
-        console.log('info', info)
-        if (err || !user) return res.json(err || info)
+        if (err) return console.log("*****************/api/user/login\r\n", err);
+        if (!user) return res.json({message: info});
 
         req.logIn(user, function (err) {
             if (err) return res.json(err);
 
-            return res.json("Success");
+            return res.json({user: user.forClient()});
         });
     })(req, res);
+});
+
+router.get("/logout", function (req, res) {
+    res.json(req.logout())
+})
+
+/* GET user by ID. */
+router.all('/currentUser', function (req, res) {
+    res.json(req.isAuthenticated() ? req.user.forClient() : undefined);
+});
+
+/* GET user by ID. */
+router.get("/test", function (req, res) {
+    if (req.isAuthenticated()) return res.json({data: "true"});
+    res.json(req.user);
 });
 
 module.exports = router;
