@@ -1,33 +1,32 @@
 import axios from "../plugins/axios";
+import Vue from 'vue';
 
 export const state = () => ({
-    currentUser: undefined
+    currentUser: {}
 });
+
 
 export const getters = {
     isAuthenticated(state) {
-        return !!state.currentUser;
+        return !!(state.currentUser && state.currentUser.email);
     }
 }
 
 export const mutations = {
     setUser(state, user) {
-        state.currentUser = user
+        state.currentUser = user || {};
     },
-    delUser(state) {
-        state.currentUser = undefined;
-    }
 }
 
 export const actions = {
     setCurrentUser({commit}) {
         return axios.get("/api/user/currentUser").then(res => {
-            commit("setUser", res.data);
+            commit("setUser", res.data.user);
         })
     },
     login({commit}, user) {
         return axios.post("/api/user/login", user).then(res => {
-            commit("setUser", res.data && res.data.user);
+            commit("setUser", res.data.user);
             return res;
         })
     },

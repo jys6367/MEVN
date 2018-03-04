@@ -205,7 +205,7 @@ router.get("/logout", function (req, res) {
 
 /* GET user by ID. */
 router.all('/currentUser', function (req, res) {
-    res.json(req.isAuthenticated() ? req.user.forClient() : undefined);
+    res.json(req.isAuthenticated() ? { user: req.user.forClient() } : undefined);
 });
 
 /* GET user by ID. */
@@ -506,9 +506,7 @@ function initSerialize() {
     });
 
     passport.deserializeUser(function (user, done) {
-        User.findById(user._id, function (err, user) {
-            done(err, user);
-        });
+        User.findById(user._id, done);
     });
 }
 

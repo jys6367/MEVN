@@ -4,6 +4,12 @@ export const state = () => ({
     boardList: []
 });
 
+export const getters = {
+    count(state){
+        return state.boardList.length;
+    }
+}
+
 export const mutations = {
     setBoardList(state, boardList) {
         state.boardList = boardList;

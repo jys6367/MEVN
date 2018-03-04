@@ -11,7 +11,7 @@
                     ></v-text-field>
                     <v-text-field
                             label="Password"
-                            v-model="user.password"
+                            v-model="user.pwd"
                             :rules="passwordRules"
                             :type="'password'"
                             required
@@ -58,7 +58,6 @@
                 </v-card-actions>
             </v-card>
         </v-flex>
-        <nuxt-link :to="{path: 'login'}">로그인</nuxt-link>
     </v-layout>
 </template>
 
@@ -86,7 +85,6 @@
             user: {
                 pwd: '',
                 email: '',
-                password: '',
                 name: '',
                 birthDay: ''
             }
@@ -94,7 +92,7 @@
         computed: {
             checkPasswordRules() {
                 return [
-                    v => (v && v === this.user.password) || '비밀번호가 서로 다릅니다.'
+                    v => (v && v === this.user.pwd) || '비밀번호가 서로 다릅니다.'
                 ]
             }
         },

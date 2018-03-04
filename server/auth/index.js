@@ -23,9 +23,7 @@ function initSerialize() {
     });
 
     passport.deserializeUser(function (user, done) {
-        User.findById(user._id, function (err, user) {
-            done(err, user);
-        });
+        User.findById(user._id, done);
     });
 }
 

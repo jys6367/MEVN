@@ -22,13 +22,10 @@
                 </v-card-actions>
             </v-card>
         </v-flex>
-        <nuxt-link :to="{path: 'join'}">회원가입페이지</nuxt-link>
     </v-layout>
 </template>
 
 <script>
-    import axios from '../../plugins/axios';
-
     import {mapActions} from 'vuex'
 
     export default {
@@ -54,7 +51,7 @@
             ]),
             submit() {
                 this.login(this.user).then(res=>{
-                    console.log(res);
+                    // console.log(res);
                 });
             }
         }
