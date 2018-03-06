@@ -1,5 +1,4 @@
 <template>
-
     <div>
         <v-dialog v-model="dialog" max-width="500px">
             <v-btn color="primary" dark slot="activator" class="mb-2">New Item</v-btn>
@@ -16,7 +15,6 @@
                             <v-flex xs12 sm6 md4>
                                 <v-text-field label="CONTENT" v-model="editedItem.content"></v-text-field>
                             </v-flex>
-
                         </v-layout>
                     </v-container>
                 </v-card-text>
@@ -27,8 +25,6 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-
-
         <v-data-table
                 :headers="headers"
                 :items="boardList"
@@ -53,6 +49,7 @@
                             <v-btn color="primary" @click="initialize">Reset</v-btn>
                         </template>-->
         </v-data-table>
+        <nuxt-link :to="'/board/update'">dddddddddddddddddd</nuxt-link>
     </div>
 </template>
 
@@ -77,11 +74,11 @@
                 {text: 'Actions', value: 'name', sortable: false}
             ]
         }),
-        computed: mapState('board',[
+        computed: mapState('board', [
             'boardList'
         ]),
         methods: {
-            ...mapActions("board",[
+            ...mapActions("board", [
                 "getList"
             ]),
             del(id) {

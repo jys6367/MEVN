@@ -1,36 +1,31 @@
 <template>
     <div>
-        제목 <input type="text" v-model="board.title">
-        내용 <input type="text" v-model="board.content">
-        <button @click="save">완료</button>
+        <ckeditor
+                v-model="content"
+        >
+        </ckeditor>
+        <button @click="test">ccc</button>
     </div>
 </template>
 
 <script>
-    import axios from "../../plugins/axios";
+    import ckeditor from '../../components/common/editor/ckeditor'
+    import {mapState} from 'vuex'
 
     export default {
-        name: "insert",
-        data() {
+        components: {ckeditor},
+        // data: function(){
+        //     content: 'aaaaaaaaaaa'
+        // },
+        asyncData({store}) {
             return {
-                board: {},
-                test: {}
+                content: "sssssssssssssssssss"
             }
         },
         methods: {
-            save() {
-                let board = {
-                    title: this.board.title,
-                    content: this.board.content
-                };
-                axios.post("/api/board/insert", board).then(res => {
-                    this.$router.push({name: "board"})
-                });
+            test() {
+                console.log(this.content);
             }
         }
     }
 </script>
-
-<style scoped>
-
-</style>

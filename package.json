@@ -15,11 +15,13 @@
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.18.2",
     "bootstrap-vue": "^2.0.0-rc.1",
+    "ckeditor": "^4.8.0",
     "connect-flash": "^0.1.1",
     "cross-env": "^5.0.1",
     "express": "^4.15.3",
     "express-session": "^1.15.6",
     "glob": "^7.1.2",
+    "medium-editor": "^5.23.3",
     "mongoose": "^5.0.7",
     "mongoose-auto-increment": "^5.0.1",
     "mysql": "^2.15.0",
@@ -28,6 +30,8 @@
     "passport-local": "^1.0.0",
     "require-context": "^1.0.4",
     "source-map-support": "^0.4.15",
+    "vue-ckeditor2": "^1.25.0",
+    "vue2-medium-editor": "^1.1.4",
     "vuetify": "^1.0.3"
   },
   "devDependencies": {
