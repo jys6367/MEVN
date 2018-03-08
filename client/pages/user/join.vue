@@ -3,54 +3,69 @@
         <v-flex xs12 sm10 md8 lg6>
             <v-card ref="form">
                 <v-card-text>
-                    <v-text-field
-                            label="E-mail"
-                            v-model="user.email"
-                            :rules="emailRules"
-                            required
-                    ></v-text-field>
-                    <v-text-field
-                            label="Password"
-                            v-model="user.pwd"
-                            :rules="passwordRules"
-                            :type="'password'"
-                            required
-                    ></v-text-field>
-                    <v-text-field
-                            label="Password Check"
-                            v-model="checkPassword"
-                            :rules="checkPasswordRules"
-                            :type="'password'"
-                            required
-                    ></v-text-field>
-                    <v-text-field
-                            label="Name"
-                            v-model="user.name"
-                            :rules="nameRules"
-                            :counter="10"
-                            required
-                    ></v-text-field>
-                    <v-dialog
-                            ref="dialog"
-                            persistent
-                            v-model="modal"
-                            lazy
-                            full-width
-                            width="290px"
-                            :return-value.sync="user.birthDay"
-                    >
+                    <v-form method='post' enctype="multipart/form-data">
                         <v-text-field
-                                slot="activator"
-                                label="Picker in dialog"
-                                v-model="user.birthDay"
-                                prepend-icon="event"
-                                readonly
+                                label="E-mail"
+                                v-model="user.email"
+                                :rules="emailRules"
+                                required
                         ></v-text-field>
-                        <v-date-picker v-model="user.birthDay" scrollable>
-                            <v-spacer></v-spacer>
-                            <v-btn flat color="primary" @click="$refs.dialog.save(user.birthDay)">OK</v-btn>
-                        </v-date-picker>
-                    </v-dialog>
+                        <v-text-field
+                                label="Password"
+                                v-model="user.pwd"
+                                :rules="passwordRules"
+                                :type="'password'"
+                                required
+                        ></v-text-field>
+                        <v-text-field
+                                label="Password Check"
+                                v-model="checkPassword"
+                                :rules="checkPasswordRules"
+                                :type="'password'"
+                                required
+                        ></v-text-field>
+                        <v-text-field
+                                label="Name"
+                                v-model="user.name"
+                                :rules="nameRules"
+                                :counter="10"
+                                required
+                        ></v-text-field>
+                        <v-dialog
+                                ref="dialog"
+                                persistent
+                                v-model="modal"
+                                lazy
+                                full-width
+                                width="290px"
+                                :return-value.sync="user.birthDay"
+                        >
+                            <v-text-field
+                                    slot="activator"
+                                    label="Picker in dialog"
+                                    v-model="user.birthDay"
+                                    prepend-icon="event"
+                                    readonly
+                            ></v-text-field>
+                            <v-date-picker v-model="user.birthDay" scrollable>
+                                <v-spacer></v-spacer>
+                                <v-btn flat color="primary" @click="$refs.dialog.save(user.birthDay)">OK</v-btn>
+                            </v-date-picker>
+                        </v-dialog>
+
+                        <v-flex xs12 class="text-xs-center text-sm-center text-md-center text-lg-center">
+                            <img :src="imageUrl" height="150" v-if="imageUrl"/>
+                            <v-text-field label="Select Image" @click='pickFile' v-model='imageName'
+                                          prepend-icon='attach_file'></v-text-field>
+                            <input
+                                    type="file"
+                                    style="display: none"
+                                    ref="image"
+                                    accept="image/*"
+                                    @change="onFilePicked"
+                            >
+                        </v-flex>
+                    </v-form>
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
@@ -63,10 +78,16 @@
 
 <script>
     import axios from '../../plugins/axios';
+    import upload from '../../plugins/upload';
+    import _ from 'lodash';
 
     export default {
         name: "join",
         data: () => ({
+            imageName: '',
+            imageUrl: '',
+            imageFile: '',
+            dialog: false,
             valid: false,
             modal: false,
             checkPassword: '',
@@ -86,7 +107,7 @@
                 pwd: '',
                 email: '',
                 name: '',
-                birthDay: ''
+                birthDay: '',
             }
         }),
         computed: {
@@ -97,12 +118,41 @@
             }
         },
         methods: {
+            pickFile() {
+                this.$refs.image.click()
+            },
+            onFilePicked(e) {
+                const files = e.target.files
+                if (files[0] !== undefined) {
+                    this.imageName = files[0].name
+                    if (this.imageName.lastIndexOf('.') <= 0) {
+                        return
+                    }
+                    const fr = new FileReader()
+                    fr.readAsDataURL(files[0])
+                    fr.addEventListener('load', () => {
+                        this.imageUrl = fr.result
+                        this.imageFile = files[0] // this is an image file that can be sent to server...
+                    })
+                } else {
+                    this.imageName = ''
+                    this.imageFile = ''
+                    this.imageUrl = ''
+                }
+            },
             submit() {
-                axios.post("/api/user/join", this.user).then(({data}) => {
-                    if(!data.status) return alert(data.message);
-                    this.$route.push({name:'board'});
+
+                let param = {
+                    file: {
+                        photo: this.$refs.image.files[0]
+                    },
+                    body: _.pick(this.user, ['name', 'pwd', 'email', 'birthDay'])
+                }
+
+                upload("/api/user/join", param).then(({data}) => {
+                    console.log(data)
                 })
-            }
+            },
         }
     }
 </script>

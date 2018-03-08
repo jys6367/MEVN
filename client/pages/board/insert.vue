@@ -1,10 +1,16 @@
 <template>
     <div>
-        <ckeditor
-                v-model="content"
-        >
-        </ckeditor>
-        <button @click="test">ccc</button>
+        <v-content>
+            <v-container>
+                <v-layout xs2>
+                    <ckeditor
+                            v-model="content"
+                    >
+                    </ckeditor>
+                    <!--<button @click="test">ccc</button>-->
+                </v-layout>
+            </v-container>
+        </v-content>
     </div>
 </template>
 

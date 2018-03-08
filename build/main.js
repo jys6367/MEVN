@@ -62,7 +62,7 @@ module.exports =
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 11);
+/******/ 	return __webpack_require__(__webpack_require__.s = 12);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -77,13 +77,13 @@ module.exports = require("express");
 
 /* WEBPACK VAR INJECTION */(function(__dirname) {var express = __webpack_require__(0);
 
-var utils = __webpack_require__(9);
+var utils = __webpack_require__(10);
 
 function useApiAll(app) {
     utils.getFiles(__dirname).filter(function (file) {
         return file !== "index.js";
     }).forEach(function (file) {
-        app.use("/" + file, __webpack_require__(21)("./" + file));
+        app.use("/" + file, __webpack_require__(23)("./" + file));
     });
 }
 
@@ -113,7 +113,7 @@ module.exports = function (app) {
 
 var router = __webpack_require__(0).Router();
 
-var Board = __webpack_require__(22);
+var Board = __webpack_require__(24);
 
 router.get("/getList", function (req, res) {
     Board.find({}, function (err, data) {
@@ -168,24 +168,56 @@ module.exports = router;
 /***/ (function(module, exports, __webpack_require__) {
 
 var passport = __webpack_require__(7);
+var path = __webpack_require__(9);
 var router = __webpack_require__(0).Router();
+var multer = __webpack_require__(25);
+// const upload = multer({dest: "../../uploads"})
+
+
+var storage = multer.diskStorage({
+    destination: function destination(req, res, callback) {
+        callback(null, './server/public/uploads');
+    },
+    filename: function filename(req, file, callback) {
+        //callback(null, file.originalname + Date.now());
+
+        var extension = path.extname(file.originalname);
+        var basename = path.basename(file.originalname, extension);
+        callback(null, '' + basename + Date.now() + extension);
+    }
+});
+
+var upload = multer({
+    storage: storage,
+    limits: {
+        fies: 10,
+        fileSize: 1024 * 1024 * 1024
+    }
+});
 
 var User = __webpack_require__(8);
 
-router.post('/join', function (req, res, next) {
-    new User(Object.assign({}, req.body, {
-        state: "REG",
-        userType: "NORMAL",
-        regDt: new Date()
-    })).save(function (err) {
-        res.json({
-            status: !err,
-            message: err && err.message
-        });
-    });
+// router.post('/join', function (req, res, next) {
+//     new User({
+//         ...req.body,
+//         state: "REG",
+//         userType: "NORMAL",
+//         regDt: new Date()
+//     }).save(err => {
+//         res.json({
+//             status: !err,
+//             message: err && err.message
+//         });
+//     });
+// });
+
+router.route('/join').post(upload.array('photo', 1), function (req, res, next) {
+    console.log(req.files[0]);
+    console.dir(req.body);
+
+    res.json({ file: req.files[0], body: req.body });
 });
 
-/* GET user by ID. */
 router.post('/login', function (req, res) {
     passport.authenticate('local', function (err, user, info) {
         if (err) return console.log("*****************/api/user/login\r\n", err);
@@ -319,21 +351,27 @@ module.exports = User;
 
 /***/ }),
 /* 9 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-
-module.exports = {
-    getFiles: function getFiles(path) {
-        return __webpack_require__(18).readdirSync(path);
-    }
-};
+module.exports = require("path");
 
 /***/ }),
 /* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
+
+module.exports = {
+    getFiles: function getFiles(path) {
+        return __webpack_require__(20).readdirSync(path);
+    }
+};
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
 var passport = __webpack_require__(7);
-var LocalStrategy = __webpack_require__(20).Strategy;
+var LocalStrategy = __webpack_require__(22).Strategy;
 
 var User = __webpack_require__(8);
 
@@ -356,23 +394,24 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
 
 var config = __webpack_require__(4);
-var db = __webpack_require__(12)();
-var app = __webpack_require__(13)();
+var db = __webpack_require__(13)();
+var app = __webpack_require__(14)();
 
 app.listen(config.port, config.host, function () {
     console.log("SERVER INIT");
+    console.log(123);
 });
 
 console.log('Server listening on ' + config.host + ':' + config.port);
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var mongoose = __webpack_require__(5);
@@ -405,21 +444,25 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _require = __webpack_require__(14),
+/* WEBPACK VAR INJECTION */(function(__dirname) {var _require = __webpack_require__(15),
     Builder = _require.Builder,
     Nuxt = _require.Nuxt;
 
-var session = __webpack_require__(15);
-var bodyParser = __webpack_require__(16);
+var session = __webpack_require__(16);
+var bodyParser = __webpack_require__(17);
 var express = __webpack_require__(0);
+var serveStatic = __webpack_require__(18);
+var path = __webpack_require__(9);
+
 var config = __webpack_require__(4);
 
 function initMiddleware(app) {
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(bodyParser.json());
+    app.use("/public", serveStatic(path.join(__dirname, "..", "public")));
 }
 
 function initSession(app) {
@@ -427,7 +470,7 @@ function initSession(app) {
 }
 
 function initAuth(app) {
-    __webpack_require__(17)(app);
+    __webpack_require__(19)(app);
 }
 
 function initRouter(app) {
@@ -435,7 +478,7 @@ function initRouter(app) {
 }
 
 function initNuxt(app) {
-    var nuxtConfig = __webpack_require__(23);
+    var nuxtConfig = __webpack_require__(26);
     nuxtConfig.dev = !("development" === 'production');
 
     var nuxt = new Nuxt(nuxtConfig);
@@ -459,32 +502,39 @@ module.exports = function () {
 
     return app;
 };
-
-/***/ }),
-/* 14 */
-/***/ (function(module, exports) {
-
-module.exports = require("nuxt");
+/* WEBPACK VAR INJECTION */}.call(exports, "server\\init"))
 
 /***/ }),
 /* 15 */
 /***/ (function(module, exports) {
 
-module.exports = require("express-session");
+module.exports = require("nuxt");
 
 /***/ }),
 /* 16 */
 /***/ (function(module, exports) {
 
-module.exports = require("body-parser");
+module.exports = require("express-session");
 
 /***/ }),
 /* 17 */
+/***/ (function(module, exports) {
+
+module.exports = require("body-parser");
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports) {
+
+module.exports = require("serve-static");
+
+/***/ }),
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(__dirname) {var passport = __webpack_require__(7);
 
-var utils = __webpack_require__(9);
+var utils = __webpack_require__(10);
 var User = __webpack_require__(8);
 
 function initPassport(app) {
@@ -494,7 +544,7 @@ function initPassport(app) {
 
 function initAllStrategies() {
     utils.getFiles(__dirname + "/strategies/").forEach(function (file) {
-        __webpack_require__(19)("./" + file)();
+        __webpack_require__(21)("./" + file)();
     });
 }
 
@@ -518,18 +568,18 @@ module.exports = function (app) {
 /* WEBPACK VAR INJECTION */}.call(exports, "server\\auth"))
 
 /***/ }),
-/* 18 */
+/* 20 */
 /***/ (function(module, exports) {
 
 module.exports = require("fs");
 
 /***/ }),
-/* 19 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./local": 10,
-	"./local.js": 10
+	"./local": 11,
+	"./local.js": 11
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -545,16 +595,16 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 19;
+webpackContext.id = 21;
 
 /***/ }),
-/* 20 */
+/* 22 */
 /***/ (function(module, exports) {
 
 module.exports = require("passport-local");
 
 /***/ }),
-/* 21 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
@@ -584,10 +634,10 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 21;
+webpackContext.id = 23;
 
 /***/ }),
-/* 22 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var mongoose = __webpack_require__(5);
@@ -622,7 +672,13 @@ var Board = mongoose.model("Board", BoardSchema);
 module.exports = Board;
 
 /***/ }),
-/* 23 */
+/* 25 */
+/***/ (function(module, exports) {
+
+module.exports = require("multer");
+
+/***/ }),
+/* 26 */
 /***/ (function(module, exports) {
 
 module.exports = {

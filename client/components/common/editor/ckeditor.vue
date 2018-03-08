@@ -1,11 +1,10 @@
 <template>
-    <div class="app">
         <ckeditor
+                :types="types"
                 :value="value"
                 @input="onChange"
                 :config="config">
         </ckeditor>
-    </div>
 </template>
 
 <script>
@@ -13,9 +12,10 @@
 
     export default {
         components: {Ckeditor},
-        props: ['value'],
+        props: ['value', 'types'],
         data() {
             return {
+                type:"inline",
                 config: {
                     toolbar: [
                         {
@@ -51,7 +51,8 @@
                         {name: 'tools', items: ['Maximize', 'ShowBlocks']},
                         {name: 'about', items: ['About']}
                     ],
-                    height: 300
+                    height: '90%',
+                    width: '180%'
                 }
             }
         },

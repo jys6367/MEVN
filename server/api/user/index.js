@@ -1,23 +1,55 @@
 const passport = require('passport');
+const path = require('path');
 const router = require('express').Router()
+const multer  = require('multer')
+// const upload = multer({dest: "../../uploads"})
+
+
+var storage = multer.diskStorage({
+    destination: (req, res, callback) => {
+        callback(null, './server/public/uploads');
+    },
+    filename: (req, file, callback) => {
+        //callback(null, file.originalname + Date.now());
+
+        var extension = path.extname(file.originalname);
+        var basename = path.basename(file.originalname, extension);
+        callback(null, `${basename}${Date.now()}${extension}`);
+    }
+});
+
+var upload = multer({
+    storage: storage,
+    limits: {
+        fies: 10,
+        fileSize: 1024 * 1024 * 1024
+    }
+});
 
 const User = require("../../model/user")
 
-router.post('/join', function (req, res, next) {
-    new User({
-        ...req.body,
-        state: "REG",
-        userType: "NORMAL",
-        regDt: new Date()
-    }).save(err => {
-        res.json({
-            status: !err,
-            message: err && err.message
-        });
-    });
+// router.post('/join', function (req, res, next) {
+//     new User({
+//         ...req.body,
+//         state: "REG",
+//         userType: "NORMAL",
+//         regDt: new Date()
+//     }).save(err => {
+//         res.json({
+//             status: !err,
+//             message: err && err.message
+//         });
+//     });
+// });
+
+router.route('/join').post(upload.array('photo', 1), function (req, res, next) {
+    console.log(req.files[0])
+    console.dir(req.body)
+
+    res.json({file: req.files[0], body: req.body})
 });
 
-/* GET user by ID. */
+
 router.post('/login', function (req, res) {
     passport.authenticate('local', function (err, user, info) {
         if (err) return console.log("*****************/api/user/login\r\n", err);

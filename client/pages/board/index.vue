@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <v-layout justify-center align-center>
         <v-dialog v-model="dialog" max-width="500px">
             <v-btn color="primary" dark slot="activator" class="mb-2">New Item</v-btn>
             <v-card>
@@ -30,6 +30,7 @@
                 :items="boardList"
                 hide-actions
                 class="elevation-1"
+                width="180%"
         >
             <template slot="items" slot-scope="props">
                 <td class="text-xs-left">{{ props.item._id }}</td>
@@ -50,7 +51,7 @@
                         </template>-->
         </v-data-table>
         <nuxt-link :to="'/board/update'">dddddddddddddddddd</nuxt-link>
-    </div>
+    </v-layout>
 </template>
 
 

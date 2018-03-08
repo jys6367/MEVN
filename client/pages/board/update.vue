@@ -1,127 +1,71 @@
 <template>
     <div>
-        <div :id="id"
-             :contenteditable="contenteditable"
-             v-html="content">
-        </div>
-        <button @click="startEdit">go</button>
-        <br/>
-        <button @click="endEdit">exit</button>
-        <br/>
-        <button @click="reset">reset</button>
+        <ckeditor :isEdit="isEdit"
+                   v-model="content"
+        >
+        </ckeditor>
+        <button @click="test">test</button>
     </div>
 </template>
 
 <script>
-
-    // CKEDITOR.disabledAutoInline = true;
+    import ckeditor from '~/components/common/editor/inlineEditor'
+    import {mapState} from 'vuex'
 
     export default {
-        data: () => ({
-            id:"introduction",
-            contenteditable: false,
-            oriContent: '',
-            $editor: {},
+        components: {ckeditor},
+        data: ()=> ({
+            isEdit: true
         }),
-        mounted() {
-            this.$editor = document.getElementById(this.id);
-            this.oriContent = this.content;
-        },
         asyncData({store}) {
             return {
-                content: "<h1>sssssssssssssssssss</h1>",
+                content: "sssssssssssssssssss"
             }
         },
         methods: {
-            startEdit() {
-                this.contenteditable = true;
-                this.enableEditing();
-            },
-            enableEditing() {
-                if (!CKEDITOR.instances.introduction) {
-                    CKEDITOR.inline('introduction', {
-                        extraAllowedContent: 'a(documentation);abbr[title];code',
-                        startupFocus: true
-                    });
-                }
-            },
-            endEdit() {
-                CKEDITOR.instances.introduction.focusManager.blur(true);
-                this.contenteditable = false;
-                this.disableEditing();
-            },
-            disableEditing() {
-                if (CKEDITOR.instances.introduction)
-                    CKEDITOR.instances.introduction.destroy();
-            },
-            reset() {
-                this.$editor.innerHTML = this.oriContent;
+            test() {
+                this.isEdit = !this.isEdit;
             }
-        },
+        }
     }
 </script>
 
-
 <!--<template>-->
-    <!--<div>-->
-        <!--<div id="introduction" v-html="content">-->
-        <!--</div>-->
-        <!--<button @click="startEdit">go</button>-->
-        <!--<br/>-->
-        <!--<button @click="endEdit">exit</button>-->
-        <!--<br/>-->
-        <!--<button @click="reset">reset</button>-->
-    <!--</div>-->
+<!--<div>-->
+<!--<inline-editor :editable="edit" v-model="content"></inline-editor>-->
+
+<!--<button @click="start">start</button>-->
+<!--<br>-->
+<!--<button @click="end">end</button>-->
+<!--<br/>-->
+<!--<button @click="test">test</button>-->
+<!--</div>-->
+
 <!--</template>-->
 
 <!--<script>-->
 
-    <!--// CKEDITOR.disabledAutoInline = true;-->
+<!--import editor from "../../components/common/editor/inlineEditor"-->
 
-    <!--export default {-->
-        <!--data: () => ({-->
-            <!--oriContent: '',-->
-            <!--introduction: {},-->
-            <!--isEditingEnabled: false-->
-        <!--}),-->
-        <!--mounted() {-->
-            <!--this.introduction = document.getElementById('introduction');-->
-            <!--this.oriContent = this.content;-->
-        <!--},-->
-        <!--asyncData({store}) {-->
-            <!--return {-->
-                <!--content: "<h1>sssssssssssssssssss</h1>",-->
-            <!--}-->
-        <!--},-->
-        <!--methods: {-->
-            <!--startEdit() {-->
-                <!--this.introduction.setAttribute('contenteditable', true);-->
-                <!--this.enableEditing();-->
-                <!--this.isEditingEnabled = true;-->
-            <!--},-->
-            <!--enableEditing() {-->
-                <!--if (!CKEDITOR.instances.introduction) {-->
-                    <!--CKEDITOR.inline('introduction', {-->
-                        <!--extraAllowedContent: 'a(documentation);abbr[title];code',-->
-                        <!--startupFocus: true-->
-                    <!--});-->
-                <!--}-->
-            <!--},-->
-            <!--endEdit() {-->
-                <!--console.log(CKEDITOR.instances.introduction)-->
-                <!--console.log(this.introduction)-->
-                <!--CKEDITOR.instances.introduction.focusManager.blur(true);-->
-                <!--this.introduction.setAttribute('contenteditable', false);-->
-                <!--this.disableEditing();-->
-                <!--this.isEditingEnabled = false;-->
-            <!--},-->
-            <!--disableEditing() {-->
-                <!--if (CKEDITOR.instances.introduction)-->
-                    <!--CKEDITOR.instances.introduction.destroy();-->
-            <!--},-->
-            <!--reset() {-->
-                <!--this.introduction.innerHTML = this.oriContent;-->
-            <!--}-->
-        <!--},-->
-    <!--}-->
+<!--export default {-->
+<!--data: () => ({-->
+<!--content: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',-->
+<!--edit: true-->
+<!--}),-->
+<!--components: {-->
+<!--"inlineEditor": editor-->
+<!--},-->
+<!--methods:{-->
+<!--start(){-->
+<!--this.edit = true;-->
+<!--},-->
+<!--end(){-->
+<!--this.edit = false;-->
+<!--},-->
+<!--test(){-->
+<!--console.log(this.content);-->
+<!--}-->
+<!--}-->
+<!--}-->
+
 <!--</script>-->

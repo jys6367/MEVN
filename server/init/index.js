@@ -2,15 +2,20 @@ const {Builder, Nuxt} = require("nuxt");
 const session = require("express-session");
 const bodyParser = require("body-parser");
 const express = require('express');
+const serveStatic = require('serve-static');
+const path = require("path");
+
 const config = require("../config");
+
 
 function initMiddleware(app) {
     app.use(bodyParser.urlencoded({extended: true}));
     app.use(bodyParser.json());
+    app.use("/public", serveStatic(path.join(__dirname, "..", "public")));
 }
 
 function initSession(app) {
-    app.use(session ({secret: "!XV^&_H$VJ$CHS&"}))
+    app.use(session({secret: "!XV^&_H$VJ$CHS&"}))
 }
 
 function initAuth(app) {
