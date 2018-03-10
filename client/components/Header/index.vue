@@ -61,9 +61,9 @@
             ></v-text-field>
             <v-spacer></v-spacer>
             <v-toolbar-items class="hidden-sm-and-down">
-                <v-btn flat>Link One</v-btn>
-                <v-btn flat>Link Two</v-btn>
-                <v-btn flat>Link Three</v-btn>
+                <v-btn flat v-if="isLogin" @click="logout">Logout</v-btn>
+                <v-btn flat v-if="!isLogin" :to="'/user/login'">Login</v-btn>
+                <v-btn flat v-if="!isLogin" :to="'/user/join'">Join</v-btn>
             </v-toolbar-items>
         </v-toolbar>
         <v-content>
@@ -72,28 +72,48 @@
 </template>
 
 <script>
+    import {mapGetters, mapActions} from 'vuex';
+
     export default {
         data: () => ({
             drawer: false,
             items: [
-                { icon: 'lightbulb_outline', text: 'Notes' },
-                { icon: 'touch_app', text: 'Reminders' },
-                { divider: true },
-                { heading: 'Labels' },
-                { icon: 'add', text: 'Create new label' },
-                { divider: true },
-                { icon: 'archive', text: 'Archive' },
-                { icon: 'delete', text: 'Trash' },
-                { divider: true },
-                { icon: 'settings', text: 'Settings' },
-                { icon: 'chat_bubble', text: 'Trash' },
-                { icon: 'help', text: 'Help' },
-                { icon: 'phonelink', text: 'App downloads' },
-                { icon: 'keyboard', text: 'Keyboard shortcuts' }
+                {icon: 'lightbulb_outline', text: 'Notes'},
+                {icon: 'touch_app', text: 'Reminders'},
+                {divider: true},
+                {heading: 'Labels'},
+                {icon: 'add', text: 'Create new label'},
+                {divider: true},
+                {icon: 'archive', text: 'Archive'},
+                {icon: 'delete', text: 'Trash'},
+                {divider: true},
+                {icon: 'settings', text: 'Settings'},
+                {icon: 'chat_bubble', text: 'Trash'},
+                {icon: 'help', text: 'Help'},
+                {icon: 'phonelink', text: 'App downloads'},
+                {icon: 'keyboard', text: 'Keyboard shortcuts'}
             ]
         }),
+        validate({params, query, store}) {
+            this.validCheck();
+        },
         props: {
             source: String
+        },
+        computed: {
+            ...mapGetters({
+                isLogin: "isAuthenticated"
+            })
+        },
+        methods: {
+            validCheck() {
+                if (!this.isLogin)
+                    this.$router.push("/board");
+            },
+            logout() {
+                this.$store.dispatch("logout")
+                    .then(this.validCheck)
+            }
         }
     }
 </script>

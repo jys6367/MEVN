@@ -1,10 +1,10 @@
 <template>
-        <ckeditor
-                :types="types"
-                :value="value"
-                @input="onChange"
-                :config="config">
-        </ckeditor>
+    <ckeditor
+            :types="types"
+            :value="value"
+            @input="onChange"
+            :config="config">
+    </ckeditor>
 </template>
 
 <script>
@@ -15,7 +15,7 @@
         props: ['value', 'types'],
         data() {
             return {
-                type:"inline",
+                type: "inline",
                 config: {
                     toolbar: [
                         {
@@ -52,10 +52,15 @@
                         {name: 'about', items: ['About']}
                     ],
                     height: '90%',
-                    width: '180%'
+                    width: '90%'
                 }
             }
         },
+        // computed:{
+        //   types(){
+        //       return "inline"
+        //   }
+        // },
         methods: {
             onChange: function (html) {
                 this.$emit('input', html);

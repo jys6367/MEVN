@@ -1,12 +1,12 @@
 const router = require("express").Router()
 
+
 const Board = require("../../model/board");
 
 router.get("/getList", function (req, res) {
     Board.find({}, function (err, data) {
         res.json(data);
     })
-
 });
 
 router.get("/:id", function (req, res) {
@@ -32,18 +32,21 @@ router.put("/:id", function (req, res) {
             res.json(err);
         }
         else{
+            res.json(NoLogin)
             res.json("Success");
         }
     })
 });
 
 router.post("/insert", function (req, res) {
-    let body = req.body;
-    let board = new Board();
-    board.title = body.title;
-    board.content = body.content;
+    console.log('board', req.body)
+    let board = new Board({
+        ...req.body,
+        regDate : new Date()
+    });
     board.save(function (err) {
         if (err) {
+            console.log(err.message)
             res.json("error");
         }
         else {

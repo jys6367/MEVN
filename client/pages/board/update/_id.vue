@@ -1,32 +1,49 @@
 <template>
     <div>
-        <ckeditor :isEdit="isEdit"
-                   v-model="content"
-        >
-        </ckeditor>
-        <button @click="test">test</button>
+        <v-content>
+            <v-container>
+                <v-layout>
+                    <input type="text" :value="board.title">
+                </v-layout>
+                <v-layout>
+                    <ckeditor
+                            v-model="board.content"
+                    >
+                    </ckeditor>
+                    <!--<button @click="test">ccc</button>-->
+                </v-layout>
+                <v-layout>
+                    <v-btn @click="preView">
+                        미리보기 {{isPreView ? "닫기" : ""}}
+                    </v-btn>
+                    <v-btn @click="save(board)">
+                        등록
+                    </v-btn>
+                    <v-btn :to="{}">
+                        등록
+                    </v-btn>
+                </v-layout>
+                <v-layout v-html="board.content" v-if="isPreView">
+                </v-layout>
+            </v-container>
+        </v-content>
     </div>
 </template>
-
 <script>
     import ckeditor from '~/components/common/editor/inlineEditor'
     import {mapState} from 'vuex'
 
     export default {
         components: {ckeditor},
-        data: ()=> ({
+        data: () => ({
             isEdit: true
         }),
-        asyncData({store}) {
-            return {
+        asyncData: ({store}) => ({
+            board: {
+                title: "",
                 content: "sssssssssssssssssss"
             }
-        },
-        methods: {
-            test() {
-                this.isEdit = !this.isEdit;
-            }
-        }
+        })
     }
 </script>
 

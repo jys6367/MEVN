@@ -142,18 +142,20 @@ router.put("/:id", function (req, res) {
         if (err) {
             res.json(err);
         } else {
+            res.json(NoLogin);
             res.json("Success");
         }
     });
 });
 
 router.post("/insert", function (req, res) {
-    var body = req.body;
-    var board = new Board();
-    board.title = body.title;
-    board.content = body.content;
+    console.log('board', req.body);
+    var board = new Board(Object.assign({}, req.body, {
+        regDate: new Date()
+    }));
     board.save(function (err) {
         if (err) {
+            console.log(err.message);
             res.json("error");
         } else {
             res.json("success");
@@ -170,34 +172,25 @@ module.exports = router;
 var passport = __webpack_require__(7);
 var path = __webpack_require__(9);
 var router = __webpack_require__(0).Router();
-var multer = __webpack_require__(25);
-// const upload = multer({dest: "../../uploads"})
-
-
-var storage = multer.diskStorage({
-    destination: function destination(req, res, callback) {
-        callback(null, './server/public/uploads');
-    },
-    filename: function filename(req, file, callback) {
-        //callback(null, file.originalname + Date.now());
-
-        var extension = path.extname(file.originalname);
-        var basename = path.basename(file.originalname, extension);
-        callback(null, '' + basename + Date.now() + extension);
-    }
-});
-
-var upload = multer({
-    storage: storage,
-    limits: {
-        fies: 10,
-        fileSize: 1024 * 1024 * 1024
-    }
-});
 
 var User = __webpack_require__(8);
+var upload = __webpack_require__(25);
 
-// router.post('/join', function (req, res, next) {
+router.post('/join', function (req, res, next) {
+    new User(Object.assign({}, req.body, {
+        state: "REG",
+        userType: "NORMAL",
+        regDt: new Date()
+    })).save(function (err) {
+        res.json({
+            status: !err,
+            message: err && err.message
+        });
+    });
+});
+
+// router.post('/join', upload.single('photo'), function (req, res, next) {
+//
 //     new User({
 //         ...req.body,
 //         state: "REG",
@@ -209,14 +202,10 @@ var User = __webpack_require__(8);
 //             message: err && err.message
 //         });
 //     });
+//
+//     res.json({file: req.files[0], body: req.body})
 // });
 
-router.route('/join').post(upload.array('photo', 1), function (req, res, next) {
-    console.log(req.files[0]);
-    console.dir(req.body);
-
-    res.json({ file: req.files[0], body: req.body });
-});
 
 router.post('/login', function (req, res) {
     passport.authenticate('local', function (err, user, info) {
@@ -231,7 +220,7 @@ router.post('/login', function (req, res) {
     })(req, res);
 });
 
-router.get("/logout", function (req, res) {
+router.all("/logout", function (req, res) {
     res.json(req.logout());
 });
 
@@ -478,7 +467,7 @@ function initRouter(app) {
 }
 
 function initNuxt(app) {
-    var nuxtConfig = __webpack_require__(26);
+    var nuxtConfig = __webpack_require__(27);
     nuxtConfig.dev = !("development" === 'production');
 
     var nuxt = new Nuxt(nuxtConfig);
@@ -673,12 +662,44 @@ module.exports = Board;
 
 /***/ }),
 /* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var multer = __webpack_require__(26);
+// const upload = multer({dest: "../../uploads"})
+
+
+var storage = multer.diskStorage({
+    destination: function destination(req, res, callback) {
+        callback(null, './server/public/uploads');
+    },
+    filename: function filename(req, file, callback) {
+        //callback(null, file.originalname + Date.now());
+
+        var extension = path.extname(file.originalname);
+        var basename = path.basename(file.originalname, extension);
+        callback(null, '' + basename + Date.now() + extension);
+    }
+});
+
+var upload = multer({
+    storage: storage,
+    limits: {
+        fies: 10,
+        fileSize: 1024 * 1024 * 1024
+    }
+});
+
+module.exports = upload;
+
+/***/ }),
+/* 26 */
 /***/ (function(module, exports) {
 
 module.exports = require("multer");
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports) {
 
 module.exports = {

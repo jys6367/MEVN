@@ -9,6 +9,9 @@ export const state = () => ({
 export const getters = {
     isAuthenticated(state) {
         return !!(state.currentUser && state.currentUser.email);
+    },
+    isLogin(state, getters) {
+        return getters.isAuthenticated;
     }
 }
 
@@ -24,14 +27,17 @@ export const actions = {
             commit("setUser", res.data.user);
         })
     },
-    login({commit}, user) {
-        return axios.post("/api/user/login", user).then(res => {
-            commit("setUser", res.data.user);
-            return res;
+    login({commit, getters}, user) {
+        return axios.post("/api/user/login", user).then(({data}) => {
+            commit("setUser", data.user);
+            return {
+                isSuccess: getters.isLogin,
+                message: data
+            };
         })
     },
     logout({commit}) {
-        commit("delUser");
+        commit("setUser", {});
         return axios.post("/api/user/logout");
     }
 }

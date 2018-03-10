@@ -1,7 +1,14 @@
 <template>
     <v-layout justify-center align-center>
         <v-dialog v-model="dialog" max-width="500px">
-            <v-btn color="primary" dark slot="activator" class="mb-2">New Item</v-btn>
+            <v-btn
+                    color="primary"
+                    dark slot="activator"
+                    class="mb-2"
+                    to="/board/insert"
+            >
+                New Item
+            </v-btn>
             <v-card>
                 <v-card-title>
                     <span class="headline">update Form</span>
@@ -34,11 +41,15 @@
         >
             <template slot="items" slot-scope="props">
                 <td class="text-xs-left">{{ props.item._id }}</td>
-                <td class="text-xs-left">{{ props.item.title}}</td>
+                <td class="text-xs-left">
+                    <v-btn :to="{name: 'board-id', params:{id: props.item._id}}">
+                        {{ props.item.title}}
+                    </v-btn>
+                </td>
                 <td class="text-xs-left">{{ props.item.content }}</td>
                 <td class="text-xs-left">{{ props.item.regDate }}</td>
                 <td class="text-xs-left layout px-0">
-                    <v-btn icon class="mx-0" @click="editItem(props.item)">
+                    <v-btn icon class="mx-0" :to="{name:'board-update-id', params:{id: props.item._id}}">
                         <v-icon color="teal">edit</v-icon>
                     </v-btn>
                     <v-btn icon class="mx-0" @click="del(props.item._id)">
@@ -50,7 +61,6 @@
                             <v-btn color="primary" @click="initialize">Reset</v-btn>
                         </template>-->
         </v-data-table>
-        <nuxt-link :to="'/board/update'">dddddddddddddddddd</nuxt-link>
     </v-layout>
 </template>
 

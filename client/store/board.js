@@ -21,5 +21,15 @@ export const actions = {
         return axios.get('/api/board/getList').then((res) => {
             commit("setBoardList", res.data);
         })
+    },
+    save({}, board){
+        return axios.post('/api/board/insert', board).then(res=>{
+            if(res.staus) return this.$router.push("insert");
+        })
+    },
+    get({}, id){
+        return axios.get(`/api/board/${id}`).then(res=>{
+            if(res.staus) return this.$router.push("insert");
+        })
     }
 }

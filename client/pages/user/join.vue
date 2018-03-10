@@ -77,9 +77,8 @@
 </template>
 
 <script>
-    import axios from '../../plugins/axios';
     import upload from '../../plugins/upload';
-    import _ from 'lodash';
+    import {pick} from 'lodash';
 
     export default {
         name: "join",
@@ -141,12 +140,11 @@
                 }
             },
             submit() {
-
                 let param = {
                     file: {
                         photo: this.$refs.image.files[0]
                     },
-                    body: _.pick(this.user, ['name', 'pwd', 'email', 'birthDay'])
+                    body: pick(this.user, ['name', 'pwd', 'email', 'birthDay'])
                 }
 
                 upload("/api/user/join", param).then(({data}) => {

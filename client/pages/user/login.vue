@@ -50,8 +50,10 @@
                 "login"
             ]),
             submit() {
-                this.login(this.user).then(res=>{
-                    // console.log(res);
+                this.login(this.user).then(loginSuccess=>{
+                    if(loginSuccess) return this.$router.push("/board");
+
+                    alert("실패");
                 });
             }
         }
