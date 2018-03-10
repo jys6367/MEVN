@@ -23,7 +23,7 @@ function initAuth(app) {
 }
 
 function initRouter(app) {
-    require("../api")(app);
+    require("./controller")(app);
 }
 
 function initNuxt(app) {
