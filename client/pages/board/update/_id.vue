@@ -13,17 +13,9 @@
                     <!--<button @click="test">ccc</button>-->
                 </v-layout>
                 <v-layout>
-                    <v-btn @click="preView">
-                        미리보기 {{isPreView ? "닫기" : ""}}
+                    <v-btn @click="save">
+                        수정
                     </v-btn>
-                    <v-btn @click="save(board)">
-                        등록
-                    </v-btn>
-                    <v-btn :to="{}">
-                        등록
-                    </v-btn>
-                </v-layout>
-                <v-layout v-html="board.content" v-if="isPreView">
                 </v-layout>
             </v-container>
         </v-content>
@@ -43,7 +35,12 @@
                 title: "",
                 content: "sssssssssssssssssss"
             }
-        })
+        }),
+        methods: {
+            save(){
+
+            }
+        }
     }
 </script>
 
