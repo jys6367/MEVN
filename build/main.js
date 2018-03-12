@@ -139,13 +139,13 @@ module.exports = User;
 /* 1 */
 /***/ (function(module, exports) {
 
-module.exports = require("path");
+module.exports = require("express");
 
 /***/ }),
 /* 2 */
 /***/ (function(module, exports) {
 
-module.exports = require("express");
+module.exports = require("path");
 
 /***/ }),
 /* 3 */
@@ -231,7 +231,7 @@ module.exports = require("fs");
 /* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var router = __webpack_require__(2).Router();
+var router = __webpack_require__(1).Router();
 
 var Board = __webpack_require__(3);
 
@@ -290,8 +290,8 @@ module.exports = router;
 /***/ (function(module, exports, __webpack_require__) {
 
 var passport = __webpack_require__(5);
-var path = __webpack_require__(1);
-var router = __webpack_require__(2).Router();
+var path = __webpack_require__(2);
+var router = __webpack_require__(1).Router();
 
 var User = __webpack_require__(0);
 var upload = __webpack_require__(18);
@@ -414,7 +414,7 @@ module.exports = function () {
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(__dirname) {var fs = __webpack_require__(6);
-var path = __webpack_require__(1);
+var path = __webpack_require__(2);
 
 module.exports = function (_this) {
     fs.readdirSync(path.join(__dirname, '..', "model")).forEach(injectModel);
@@ -553,8 +553,8 @@ module.exports = function TestController() {
 /***/ (function(module, exports, __webpack_require__) {
 
 var passport = __webpack_require__(5);
-var path = __webpack_require__(1);
-var router = __webpack_require__(2).Router();
+var path = __webpack_require__(2);
+var router = __webpack_require__(1).Router();
 
 var upload = __webpack_require__(18);
 
@@ -674,9 +674,9 @@ console.log('Server listening on ' + config.host + ':' + config.port);
 
 var session = __webpack_require__(22);
 var bodyParser = __webpack_require__(23);
-var express = __webpack_require__(2);
+var express = __webpack_require__(1);
 var serveStatic = __webpack_require__(24);
-var path = __webpack_require__(1);
+var path = __webpack_require__(2);
 
 var config = __webpack_require__(9);
 
@@ -833,8 +833,8 @@ module.exports = require("passport-local");
 /* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(__dirname) {var express = __webpack_require__(2);
-var path = __webpack_require__(1);
+/* WEBPACK VAR INJECTION */(function(__dirname) {var express = __webpack_require__(1);
+var path = __webpack_require__(2);
 var fs = __webpack_require__(6);
 var _ = __webpack_require__(30);
 
@@ -874,14 +874,13 @@ function Controller() {
     }
 
     function getParam(req, res) {
-        var resultTypes = Result(res);
         var basicParam = Object.assign({
             req: req,
             res: res,
             body: req.body,
             params: req.params,
             currentUser: req.user
-        }, resultTypes);
+        }, Result(res));
         var customParam = Object.assign({}, this.services, this.models);
 
         return {
@@ -893,10 +892,10 @@ function Controller() {
         var _this2 = this;
 
         return function (req, res) {
-            var _getParam$call = getParam.call(_this2, req, res),
-                basicParam = _getParam$call.basicParam,
-                customParam = _getParam$call.customParam,
-                resultTypes = _getParam$call.resultTypes;
+            var _getParam = getParam(req, res),
+                basicParam = _getParam.basicParam,
+                customParam = _getParam.customParam,
+                resultTypes = _getParam.resultTypes;
 
             try {
                 console.log('*****' + type + '.' + methodName + '() \uD638\uCD9C*****');
@@ -1063,7 +1062,7 @@ webpackContext.id = 32;
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(__dirname) {var fs = __webpack_require__(6);
-var path = __webpack_require__(1);
+var path = __webpack_require__(2);
 
 function Service() {
     requireModel.call(this);

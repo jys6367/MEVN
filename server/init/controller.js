@@ -36,14 +36,13 @@ function Controller() {
     }
 
     function getParam(req, res) {
-        let resultTypes = Result(res);
         let basicParam = {
             req,
             res,
             body: req.body,
             params: req.params,
             currentUser: req.user,
-            ...resultTypes
+            ...Result(res)
         }
         let customParam = {
             ...this.services,
