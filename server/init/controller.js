@@ -1,17 +1,22 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
-const _ = require("lodash")
 
-const Result = require("../result")
+const utils = require("../utils");
+
 const methodTypes = ["get", "post", "all", "put", "delete"];
 
 function Controller() {
 
-    this.services = {};
-    this.models = {};
-    requireAllModel.call(this.services);
-    requireAllService.call(this.models);
+    this.TestService = require("../service/TestService");
+
+    // this._init = function () {
+    //     let router = new express();
+    //
+    //     var TestController = require("./testController");
+    //     var test = new TestController();
+    //
+    // }
 
     this.post = {};
     this.get = {};
@@ -35,48 +40,27 @@ function Controller() {
         return `/${methodName}`;
     }
 
-    function getParam(req, res) {
-        let basicParam = {
-            req,
-            res,
-            body: req.body,
-            params: req.params,
-            currentUser: req.user,
-            ...Result(res)
-        }
-        let customParam = {
-            ...this.services,
-            ...this.models,
-        }
+    function init(req, res) {
+        this.req = req;
+        this.res = res;
 
-        return {
-            basicParam, customParam, resultTypes
-        }
+        this.body = req.body;
+        this.params = req.params;
+
+        this.currentUser = req.user;
     }
 
     function getDispatch(type, methodName) {
         return (req, res) => {
+            init.call(this, req, res);
 
-            let {basicParam, customParam, resultTypes} = getParam(req, res);
+            if (typeof(this[type][methodName]) !== 'function')
+                return res.json('')
+            // res.json(Error404)
 
-            try {
-                console.log(`*****${type}.${methodName}() 호출*****`)
-                this[type][methodName].call(this, basicParam, customParam)
-                console.log(`*****${type}.${methodName}() 종료******`)
-            } catch (e) {
-                resultTypes.Error(e);
-            }
+            res.json(this[type][methodName](123));
         }
     }
-}
-
-
-function requireAllModel() {
-    require("./model")(this);
-}
-
-function requireAllService() {
-    require("./service")(this);
 }
 
 function getController(_Controller) {
@@ -95,10 +79,6 @@ function getRouter(_Controller) {
         methodInfoArr.forEach(info => {
             router[type](info.route, info.dispatch);
         })
-    })
-
-    router.all("/", (req, res) => {
-        Result(res).NotFound()
     })
 
     return router;
@@ -120,10 +100,6 @@ function getApp() {
 
     controllerInfoArr.forEach(info => {
         app.use(info.route, getRouter(info.Controller))
-    })
-
-    app.use("/", (req, res) => {
-        Result(res).NotFound()
     })
 
     return app;

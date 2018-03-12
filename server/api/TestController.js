@@ -1,25 +1,18 @@
 module.exports = function TestController() {
-
-    this.post.test = function ({param, currentUser}) {
+    this.post.test = function (param) {
         return {
             param,
-            currentUser
+            currentUser: this.currentUser
         }
     }
 
-    this.get.test = function ({res, Json, param, currentUser}, {TestService}) {
+    this.get.test = function (param) {
         console.log("testcontroller. test 함수 실행")
 
-        let result = TestService.test();
-        res.json(123)
-        res.json(123)
-        res.json(123)
-        res.json(123)
-        return Json({
+        return {
             param,
-            result,
-            currentUser
-        })
+            currentUser: this.currentUser
+        }
     }
 }
 
