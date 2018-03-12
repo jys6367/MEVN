@@ -62,11 +62,183 @@ module.exports =
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 8);
+/******/ 	return __webpack_require__(__webpack_require__.s = 12);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports) {
+
+module.exports = require("express");
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(__dirname) {var express = __webpack_require__(0);
+
+var utils = __webpack_require__(10);
+
+function useApiAll(app) {
+    utils.getFiles(__dirname).filter(function (file) {
+        return file !== "index.js";
+    }).forEach(function (file) {
+        app.use("/" + file, __webpack_require__(23)("./" + file));
+    });
+}
+
+function routeNone(app) {
+    app.use(function (req, res) {
+        // 404
+        res.json("404_ERROR");
+    });
+}
+
+function getApp() {
+    var app = express();
+    useApiAll(app);
+    routeNone(app);
+
+    return app;
+}
+
+module.exports = function (app) {
+    app.use("/api", getApp());
+};
+/* WEBPACK VAR INJECTION */}.call(exports, "server\\api"))
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var router = __webpack_require__(0).Router();
+
+var Board = __webpack_require__(24);
+
+router.get("/getList", function (req, res) {
+    Board.find({}, function (err, data) {
+        res.json(data);
+    });
+});
+
+router.get("/:id", function (req, res) {
+    Board.findOne({ _id: req.params.id }, function (err, data) {
+        res.json(data);
+    });
+});
+
+router.delete("/:id", function (req, res) {
+    Board.deleteOne({ _id: req.params.id }, function (err) {
+        if (err) {
+            res.json(err);
+        } else {
+            res.json("Success");
+        }
+    });
+});
+
+router.put("/:id", function (req, res) {
+    Board.update({ _id: req.params.id }, req.body, function (err) {
+        if (err) {
+            res.json(err);
+        } else {
+            res.json(NoLogin);
+            res.json("Success");
+        }
+    });
+});
+
+router.post("/insert", function (req, res) {
+    console.log('board', req.body);
+    var board = new Board(Object.assign({}, req.body, {
+        regDate: new Date()
+    }));
+    board.save(function (err) {
+        if (err) {
+            console.log(err.message);
+            res.json("error");
+        } else {
+            res.json("success");
+        }
+    });
+});
+
+module.exports = router;
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var passport = __webpack_require__(7);
+var path = __webpack_require__(9);
+var router = __webpack_require__(0).Router();
+
+var User = __webpack_require__(8);
+var upload = __webpack_require__(25);
+
+router.post('/join', function (req, res, next) {
+    new User(Object.assign({}, req.body, {
+        state: "REG",
+        userType: "NORMAL",
+        regDt: new Date()
+    })).save(function (err) {
+        res.json({
+            status: !err,
+            message: err && err.message
+        });
+    });
+});
+
+// router.post('/join', upload.single('photo'), function (req, res, next) {
+//
+//     new User({
+//         ...req.body,
+//         state: "REG",
+//         userType: "NORMAL",
+//         regDt: new Date()
+//     }).save(err => {
+//         res.json({
+//             status: !err,
+//             message: err && err.message
+//         });
+//     });
+//
+//     res.json({file: req.files[0], body: req.body})
+// });
+
+
+router.post('/login', function (req, res) {
+    passport.authenticate('local', function (err, user, info) {
+        if (err) return console.log("*****************/api/user/login\r\n", err);
+        if (!user) return res.json({ message: info });
+
+        req.logIn(user, function (err) {
+            if (err) return res.json(err);
+
+            return res.json({ user: user.forClient() });
+        });
+    })(req, res);
+});
+
+router.all("/logout", function (req, res) {
+    res.json(req.logout());
+});
+
+/* GET user by ID. */
+router.all('/currentUser', function (req, res) {
+    res.json(req.isAuthenticated() ? { user: req.user.forClient() } : undefined);
+});
+
+/* GET user by ID. */
+router.get("/test", function (req, res) {
+    if (req.isAuthenticated()) return res.json({ data: "true" });
+    res.json(req.user);
+});
+
+module.exports = router;
+
+/***/ }),
+/* 4 */
 /***/ (function(module, exports) {
 
 
@@ -79,46 +251,29 @@ module.exports = {
 };
 
 /***/ }),
-/* 1 */
+/* 5 */
 /***/ (function(module, exports) {
 
 module.exports = require("mongoose");
 
 /***/ }),
-/* 2 */
+/* 6 */
 /***/ (function(module, exports) {
 
 module.exports = require("mongoose-auto-increment");
 
 /***/ }),
-/* 3 */
-/***/ (function(module, exports) {
-
-module.exports = require("express");
-
-/***/ }),
-/* 4 */
+/* 7 */
 /***/ (function(module, exports) {
 
 module.exports = require("passport");
 
 /***/ }),
-/* 5 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
-
-module.exports = {
-    getFiles: function getFiles(path) {
-        return __webpack_require__(17).readdirSync(path);
-    }
-};
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var mongoose = __webpack_require__(1);
-var autoIncrement = __webpack_require__(2);
+var mongoose = __webpack_require__(5);
+var autoIncrement = __webpack_require__(6);
 
 var UserSchema = mongoose.Schema({
     email: {
@@ -184,13 +339,30 @@ var User = mongoose.model("User", UserSchema);
 module.exports = User;
 
 /***/ }),
-/* 7 */
+/* 9 */
+/***/ (function(module, exports) {
+
+module.exports = require("path");
+
+/***/ }),
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var passport = __webpack_require__(4);
-var LocalStrategy = __webpack_require__(19).Strategy;
 
-var User = __webpack_require__(6);
+module.exports = {
+    getFiles: function getFiles(path) {
+        return __webpack_require__(20).readdirSync(path);
+    }
+};
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var passport = __webpack_require__(7);
+var LocalStrategy = __webpack_require__(22).Strategy;
+
+var User = __webpack_require__(8);
 
 module.exports = function () {
     passport.use(new LocalStrategy({
@@ -211,14 +383,14 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 8 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
 
-var config = __webpack_require__(0);
-var db = __webpack_require__(9)();
-var app = __webpack_require__(10)();
+var config = __webpack_require__(4);
+var db = __webpack_require__(13)();
+var app = __webpack_require__(14)();
 
 app.listen(config.port, config.host, function () {
     console.log("SERVER INIT");
@@ -228,12 +400,12 @@ app.listen(config.port, config.host, function () {
 console.log('Server listening on ' + config.host + ':' + config.port);
 
 /***/ }),
-/* 9 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var mongoose = __webpack_require__(1);
-var autoIncrement = __webpack_require__(2);
-var config = __webpack_require__(0);
+var mongoose = __webpack_require__(5);
+var autoIncrement = __webpack_require__(6);
+var config = __webpack_require__(4);
 
 function init(db) {
     mongoose.connect(config.db.url);
@@ -261,20 +433,20 @@ module.exports = function () {
 };
 
 /***/ }),
-/* 10 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(__dirname) {var _require = __webpack_require__(11),
+/* WEBPACK VAR INJECTION */(function(__dirname) {var _require = __webpack_require__(15),
     Builder = _require.Builder,
     Nuxt = _require.Nuxt;
 
-var session = __webpack_require__(12);
-var bodyParser = __webpack_require__(13);
-var express = __webpack_require__(3);
-var serveStatic = __webpack_require__(14);
-var path = __webpack_require__(15);
+var session = __webpack_require__(16);
+var bodyParser = __webpack_require__(17);
+var express = __webpack_require__(0);
+var serveStatic = __webpack_require__(18);
+var path = __webpack_require__(9);
 
-var config = __webpack_require__(0);
+var config = __webpack_require__(4);
 
 function initMiddleware(app) {
     app.use(bodyParser.urlencoded({ extended: true }));
@@ -287,15 +459,15 @@ function initSession(app) {
 }
 
 function initAuth(app) {
-    __webpack_require__(16)(app);
+    __webpack_require__(19)(app);
 }
 
 function initRouter(app) {
-    __webpack_require__(25)(app);
+    __webpack_require__(1)(app);
 }
 
 function initNuxt(app) {
-    var nuxtConfig = __webpack_require__(24);
+    var nuxtConfig = __webpack_require__(27);
     nuxtConfig.dev = !("development" === 'production');
 
     var nuxt = new Nuxt(nuxtConfig);
@@ -322,43 +494,37 @@ module.exports = function () {
 /* WEBPACK VAR INJECTION */}.call(exports, "server\\init"))
 
 /***/ }),
-/* 11 */
+/* 15 */
 /***/ (function(module, exports) {
 
 module.exports = require("nuxt");
 
 /***/ }),
-/* 12 */
+/* 16 */
 /***/ (function(module, exports) {
 
 module.exports = require("express-session");
 
 /***/ }),
-/* 13 */
+/* 17 */
 /***/ (function(module, exports) {
 
 module.exports = require("body-parser");
 
 /***/ }),
-/* 14 */
+/* 18 */
 /***/ (function(module, exports) {
 
 module.exports = require("serve-static");
 
 /***/ }),
-/* 15 */
-/***/ (function(module, exports) {
-
-module.exports = require("path");
-
-/***/ }),
-/* 16 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(__dirname) {var passport = __webpack_require__(4);
+/* WEBPACK VAR INJECTION */(function(__dirname) {var passport = __webpack_require__(7);
 
-var utils = __webpack_require__(5);
-var User = __webpack_require__(6);
+var utils = __webpack_require__(10);
+var User = __webpack_require__(8);
 
 function initPassport(app) {
     app.use(passport.initialize());
@@ -367,7 +533,7 @@ function initPassport(app) {
 
 function initAllStrategies() {
     utils.getFiles(__dirname + "/strategies/").forEach(function (file) {
-        __webpack_require__(18)("./" + file)();
+        __webpack_require__(21)("./" + file)();
     });
 }
 
@@ -391,18 +557,18 @@ module.exports = function (app) {
 /* WEBPACK VAR INJECTION */}.call(exports, "server\\auth"))
 
 /***/ }),
-/* 17 */
+/* 20 */
 /***/ (function(module, exports) {
 
 module.exports = require("fs");
 
 /***/ }),
-/* 18 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./local": 7,
-	"./local.js": 7
+	"./local": 11,
+	"./local.js": 11
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -418,342 +584,30 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 18;
+webpackContext.id = 21;
 
 /***/ }),
-/* 19 */
+/* 22 */
 /***/ (function(module, exports) {
 
 module.exports = require("passport-local");
 
 /***/ }),
-/* 20 */,
-/* 21 */,
-/* 22 */
-/***/ (function(module, exports) {
-
-
-
-module.exports = function TestService() {};
-
-/***/ }),
 /* 23 */
-/***/ (function(module, exports) {
-
-module.exports = function TestController() {
-    this.post.test = function (param) {
-        return {
-            param: param,
-            currentUser: this.currentUser
-        };
-    };
-
-    this.get.test = function (param) {
-        console.log("testcontroller. test 함수 실행");
-
-        return {
-            param: param,
-            currentUser: this.currentUser
-        };
-    };
-};
-
-/***/ }),
-/* 24 */
-/***/ (function(module, exports) {
-
-module.exports = {
-    srcDir: "client/",
-    /*
-    ** Headers of the page
-    */
-    head: {
-        title: 'Raccoon',
-        meta: [{ charset: 'utf-8' }, { name: 'viewport', content: 'width=device-width, initial-scale=1' }, { hid: 'description', name: 'description', content: 'Nuxt.js project' }],
-        script: [{ src: '//cdn.ckeditor.com/4.6.2/full/ckeditor.js' }],
-        link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }, { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' }]
-    },
-    router: {
-        middleware: "checkAuth"
-    },
-    plugins: ['~/plugins/vuetify.js'],
-    css: ['~/assets/style/app.styl'],
-    // css: ['~/assets/css/main.css'],
-    loading: { color: '#060580' },
-    build: {
-        vendor: ['axios', '~/plugins/vuetify.js', 'vue2-medium-editor'],
-        extractCSS: true
-    }
-};
-
-/***/ }),
-/* 25 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(__dirname) {var express = __webpack_require__(3);
-var path = __webpack_require__(15);
-var fs = __webpack_require__(17);
-
-var utils = __webpack_require__(5);
-
-var methodTypes = ["get", "post", "all", "put", "delete"];
-
-function Controller() {
-
-    this.TestService = __webpack_require__(22);
-
-    // this._init = function () {
-    //     let router = new express();
-    //
-    //     var TestController = require("./testController");
-    //     var test = new TestController();
-    //
-    // }
-
-    this.post = {};
-    this.get = {};
-    this.put = {};
-    this.delete = {};
-    this.all = {};
-
-    this.getInfo = function (type) {
-        var _this = this;
-
-        var methodNameArr = Object.keys(this[type]);
-
-        return methodNameArr.map(function (methodName) {
-            return {
-                route: getRoute(methodName),
-                dispatch: getDispatch.call(_this, type, methodName)
-            };
-        });
-    };
-
-    function getRoute(methodName) {
-        if (methodName.startsWith("_")) return '/:' + methodName.slice(1);
-
-        return '/' + methodName;
-    }
-
-    function init(req, res) {
-        this.req = req;
-        this.res = res;
-
-        this.body = req.body;
-        this.params = req.params;
-
-        this.currentUser = req.user;
-    }
-
-    function getDispatch(type, methodName) {
-        var _this2 = this;
-
-        return function (req, res) {
-            init.call(_this2, req, res);
-
-            if (typeof _this2[type][methodName] !== 'function') return res.json('');
-            // res.json(Error404)
-
-            res.json(_this2[type][methodName](123));
-        };
-    }
-}
-
-function getController(_Controller) {
-    _Controller.prototype = new Controller();
-    return new _Controller();
-}
-
-function getRouter(_Controller) {
-    var router = express.Router();
-
-    var controller = getController(_Controller);
-
-    methodTypes.forEach(function (type) {
-        var methodInfoArr = controller.getInfo(type);
-
-        methodInfoArr.forEach(function (info) {
-            router[type](info.route, info.dispatch);
-        });
-    });
-
-    return router;
-}
-
-function getAllControllerInfo() {
-    return fs.readdirSync(path.join(__dirname, '..', 'api')).filter(function (controllerName) {
-        return controllerName.toUpperCase().endsWith("CONTROLLER.JS");
-    }).map(function (controllerName) {
-        return {
-            route: '/' + controllerName.substr(0, controllerName.toUpperCase().indexOf("CONTROLLER")),
-            Controller: __webpack_require__(29)("./" + controllerName)
-        };
-    });
-}
-
-function getApp() {
-    var app = express();
-
-    var controllerInfoArr = getAllControllerInfo();
-
-    controllerInfoArr.forEach(function (info) {
-        app.use(info.route, getRouter(info.Controller));
-    });
-
-    return app;
-}
-
-module.exports = function (app) {
-    app.use("/api", getApp());
-};
-/* WEBPACK VAR INJECTION */}.call(exports, "server\\init"))
-
-/***/ }),
-/* 26 */,
-/* 27 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var router = __webpack_require__(3).Router();
-
-var Board = __webpack_require__(30);
-
-router.get("/getList", function (req, res) {
-    Board.find({}, function (err, data) {
-        res.json(data);
-    });
-});
-
-router.get("/:id", function (req, res) {
-    Board.findOne({ _id: req.params.id }, function (err, data) {
-        res.json(data);
-    });
-});
-
-router.delete("/:id", function (req, res) {
-    Board.deleteOne({ _id: req.params.id }, function (err) {
-        if (err) {
-            res.json(err);
-        } else {
-            res.json("Success");
-        }
-    });
-});
-
-router.put("/:id", function (req, res) {
-    Board.update({ _id: req.params.id }, req.body, function (err) {
-        if (err) {
-            res.json(err);
-        } else {
-            res.json(NoLogin);
-            res.json("Success");
-        }
-    });
-});
-
-router.post("/insert", function (req, res) {
-    console.log('board', req.body);
-    var board = new Board(Object.assign({}, req.body, {
-        regDate: new Date()
-    }));
-    board.save(function (err) {
-        if (err) {
-            console.log(err.message);
-            res.json("error");
-        } else {
-            res.json("success");
-        }
-    });
-});
-
-module.exports = router;
-
-/***/ }),
-/* 28 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var passport = __webpack_require__(4);
-var path = __webpack_require__(15);
-var router = __webpack_require__(3).Router();
-
-var User = __webpack_require__(6);
-var upload = __webpack_require__(31);
-
-router.post('/join', function (req, res, next) {
-    new User(Object.assign({}, req.body, {
-        state: "REG",
-        userType: "NORMAL",
-        regDt: new Date()
-    })).save(function (err) {
-        res.json({
-            status: !err,
-            message: err && err.message
-        });
-    });
-});
-
-// router.post('/join', upload.single('photo'), function (req, res, next) {
-//
-//     new User({
-//         ...req.body,
-//         state: "REG",
-//         userType: "NORMAL",
-//         regDt: new Date()
-//     }).save(err => {
-//         res.json({
-//             status: !err,
-//             message: err && err.message
-//         });
-//     });
-//
-//     res.json({file: req.files[0], body: req.body})
-// });
-
-
-router.post('/login', function (req, res) {
-    passport.authenticate('local', function (err, user, info) {
-        if (err) return console.log("*****************/api/user/login\r\n", err);
-        if (!user) return res.json({ message: info });
-
-        req.logIn(user, function (err) {
-            if (err) return res.json(err);
-
-            return res.json({ user: user.forClient() });
-        });
-    })(req, res);
-});
-
-router.all("/logout", function (req, res) {
-    res.json(req.logout());
-});
-
-/* GET user by ID. */
-router.all('/currentUser', function (req, res) {
-    res.json(req.isAuthenticated() ? { user: req.user.forClient() } : undefined);
-});
-
-/* GET user by ID. */
-router.get("/test", function (req, res) {
-    if (req.isAuthenticated()) return res.json({ data: "true" });
-    res.json(req.user);
-});
-
-module.exports = router;
-
-/***/ }),
-/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
-	"./TestController": 23,
-	"./TestController.js": 23,
-	"./board": 27,
-	"./board/": 27,
-	"./board/index": 27,
-	"./board/index.js": 27,
-	"./user": 28,
-	"./user/": 28,
-	"./user/index": 28,
-	"./user/index.js": 28
+	"./": 1,
+	"./board": 2,
+	"./board/": 2,
+	"./board/index": 2,
+	"./board/index.js": 2,
+	"./index": 1,
+	"./index.js": 1,
+	"./user": 3,
+	"./user/": 3,
+	"./user/index": 3,
+	"./user/index.js": 3
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -769,14 +623,14 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 29;
+webpackContext.id = 23;
 
 /***/ }),
-/* 30 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var mongoose = __webpack_require__(1);
-var autoIncrement = __webpack_require__(2);
+var mongoose = __webpack_require__(5);
+var autoIncrement = __webpack_require__(6);
 
 var BoardSchema = mongoose.Schema({
     title: {
@@ -807,11 +661,11 @@ var Board = mongoose.model("Board", BoardSchema);
 module.exports = Board;
 
 /***/ }),
-/* 31 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var multer = __webpack_require__(32);
+var multer = __webpack_require__(26);
 // const upload = multer({dest: "../../uploads"})
 
 
@@ -839,10 +693,38 @@ var upload = multer({
 module.exports = upload;
 
 /***/ }),
-/* 32 */
+/* 26 */
 /***/ (function(module, exports) {
 
 module.exports = require("multer");
+
+/***/ }),
+/* 27 */
+/***/ (function(module, exports) {
+
+module.exports = {
+    srcDir: "client/",
+    /*
+    ** Headers of the page
+    */
+    head: {
+        title: 'Raccoon',
+        meta: [{ charset: 'utf-8' }, { name: 'viewport', content: 'width=device-width, initial-scale=1' }, { hid: 'description', name: 'description', content: 'Nuxt.js project' }],
+        script: [{ src: '//cdn.ckeditor.com/4.6.2/full/ckeditor.js' }],
+        link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }, { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' }]
+    },
+    router: {
+        middleware: "checkAuth"
+    },
+    plugins: ['~/plugins/vuetify.js'],
+    css: ['~/assets/style/app.styl'],
+    // css: ['~/assets/css/main.css'],
+    loading: { color: '#060580' },
+    build: {
+        vendor: ['axios', '~/plugins/vuetify.js', 'vue2-medium-editor'],
+        extractCSS: true
+    }
+};
 
 /***/ })
 /******/ ]);
