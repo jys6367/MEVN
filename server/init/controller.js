@@ -57,7 +57,7 @@ function Controller() {
     function getDispatch(type, methodName) {
         return (req, res) => {
 
-            let {basicParam, customParam, resultTypes} = getParam.call(this, req, res);
+            let {basicParam, customParam, resultTypes} = getParam(req, res);
 
             try {
                 console.log(`*****${type}.${methodName}() 호출*****`)
