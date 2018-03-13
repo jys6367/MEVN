@@ -1,6 +1,7 @@
 const passport = require('passport');
+const path = require('path');
+const fs = require("fs");
 
-const utils = require("../utils");
 const User = require("../model/user");
 
 function initPassport(app) {
@@ -9,14 +10,13 @@ function initPassport(app) {
 }
 
 function initAllStrategies() {
-    utils.getFiles(`${__dirname}/strategies/`)
+    fs.readdirSync(path.join(__dirname, "..", "auth", "strategies"))
         .forEach(file => {
-            require(`${__dirname}/strategies/${file}`)()
-        })
+            require(`../auth/strategies/${file}`)()
+        });
 }
 
 function initSerialize() {
-
     // done({}, user) => req.session.passport.user = user
     passport.serializeUser(function (user, done) {
         done(null, user.forClient());

@@ -5,9 +5,6 @@ const express = require('express');
 const serveStatic = require('serve-static');
 const path = require("path");
 
-const config = require("../config");
-
-
 function initMiddleware(app) {
     app.use(bodyParser.urlencoded({extended: true}));
     app.use(bodyParser.json());
@@ -19,11 +16,11 @@ function initSession(app) {
 }
 
 function initAuth(app) {
-    require("../auth")(app);
+    require("./auth")(app);
 }
 
 function initRouter(app) {
-    require("../api")(app);
+    require("./api")(app);
 }
 
 function initNuxt(app) {
@@ -40,9 +37,14 @@ function initNuxt(app) {
     app.use(nuxt.render)
 }
 
+function initMongoose() {
+    require("./mongoose")()
+}
+
 module.exports = function () {
     let app = express();
 
+    initMongoose();
     initMiddleware(app);
     initSession(app);
     initAuth(app);

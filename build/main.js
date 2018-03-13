@@ -73,207 +73,22 @@ module.exports = require("express");
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-/* WEBPACK VAR INJECTION */(function(__dirname) {var express = __webpack_require__(0);
-
-var utils = __webpack_require__(10);
-
-function useApiAll(app) {
-    utils.getFiles(__dirname).filter(function (file) {
-        return file !== "index.js";
-    }).forEach(function (file) {
-        app.use("/" + file, __webpack_require__(23)("./" + file));
-    });
-}
-
-function routeNone(app) {
-    app.use(function (req, res) {
-        // 404
-        res.json("404_ERROR");
-    });
-}
-
-function getApp() {
-    var app = express();
-    useApiAll(app);
-    routeNone(app);
-
-    return app;
-}
-
-module.exports = function (app) {
-    app.use("/api", getApp());
-};
-/* WEBPACK VAR INJECTION */}.call(exports, "server\\api"))
+module.exports = require("path");
 
 /***/ }),
 /* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var router = __webpack_require__(0).Router();
-
-var Board = __webpack_require__(24);
-
-router.get("/getList", function (req, res) {
-    Board.find({}, function (err, data) {
-        res.json(data);
-    });
-});
-
-router.get("/:id", function (req, res) {
-    Board.findOne({ _id: req.params.id }, function (err, data) {
-        res.json(data);
-    });
-});
-
-router.delete("/:id", function (req, res) {
-    Board.deleteOne({ _id: req.params.id }, function (err) {
-        if (err) {
-            res.json(err);
-        } else {
-            res.json("Success");
-        }
-    });
-});
-
-router.put("/:id", function (req, res) {
-    Board.update({ _id: req.params.id }, req.body, function (err) {
-        if (err) {
-            res.json(err);
-        } else {
-            res.json(NoLogin);
-            res.json("Success");
-        }
-    });
-});
-
-router.post("/insert", function (req, res) {
-    console.log('board', req.body);
-    var board = new Board(Object.assign({}, req.body, {
-        regDate: new Date()
-    }));
-    board.save(function (err) {
-        if (err) {
-            console.log(err.message);
-            res.json("error");
-        } else {
-            res.json("success");
-        }
-    });
-});
-
-module.exports = router;
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var passport = __webpack_require__(7);
-var path = __webpack_require__(9);
-var router = __webpack_require__(0).Router();
-
-var User = __webpack_require__(8);
-var upload = __webpack_require__(25);
-
-router.post('/join', function (req, res, next) {
-    new User(Object.assign({}, req.body, {
-        state: "REG",
-        userType: "NORMAL",
-        regDt: new Date()
-    })).save(function (err) {
-        res.json({
-            status: !err,
-            message: err && err.message
-        });
-    });
-});
-
-// router.post('/join', upload.single('photo'), function (req, res, next) {
-//
-//     new User({
-//         ...req.body,
-//         state: "REG",
-//         userType: "NORMAL",
-//         regDt: new Date()
-//     }).save(err => {
-//         res.json({
-//             status: !err,
-//             message: err && err.message
-//         });
-//     });
-//
-//     res.json({file: req.files[0], body: req.body})
-// });
-
-
-router.post('/login', function (req, res) {
-    passport.authenticate('local', function (err, user, info) {
-        if (err) return console.log("*****************/api/user/login\r\n", err);
-        if (!user) return res.json({ message: info });
-
-        req.logIn(user, function (err) {
-            if (err) return res.json(err);
-
-            return res.json({ user: user.forClient() });
-        });
-    })(req, res);
-});
-
-router.all("/logout", function (req, res) {
-    res.json(req.logout());
-});
-
-/* GET user by ID. */
-router.all('/currentUser', function (req, res) {
-    res.json(req.isAuthenticated() ? { user: req.user.forClient() } : undefined);
-});
-
-/* GET user by ID. */
-router.get("/test", function (req, res) {
-    if (req.isAuthenticated()) return res.json({ data: "true" });
-    res.json(req.user);
-});
-
-module.exports = router;
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports) {
-
-
-module.exports = {
-    host: "localhost",
-    port: 3000,
-    db: {
-        url: "mongodb://localhost/blog"
-    }
-};
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports) {
-
-module.exports = require("mongoose");
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports) {
-
-module.exports = require("mongoose-auto-increment");
-
-/***/ }),
-/* 7 */
 /***/ (function(module, exports) {
 
 module.exports = require("passport");
 
 /***/ }),
-/* 8 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var mongoose = __webpack_require__(5);
-var autoIncrement = __webpack_require__(6);
+var mongoose = __webpack_require__(4);
+var autoIncrement = __webpack_require__(5);
 
 var UserSchema = mongoose.Schema({
     email: {
@@ -339,30 +154,44 @@ var User = mongoose.model("User", UserSchema);
 module.exports = User;
 
 /***/ }),
-/* 9 */
+/* 4 */
 /***/ (function(module, exports) {
 
-module.exports = require("path");
+module.exports = require("mongoose");
 
 /***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
+/* 5 */
+/***/ (function(module, exports) {
+
+module.exports = require("mongoose-auto-increment");
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports) {
 
 
 module.exports = {
-    getFiles: function getFiles(path) {
-        return __webpack_require__(20).readdirSync(path);
+    host: "localhost",
+    port: 3000,
+    db: {
+        url: "mongodb://localhost/blog"
     }
 };
 
 /***/ }),
-/* 11 */
+/* 7 */
+/***/ (function(module, exports) {
+
+module.exports = require("fs");
+
+/***/ }),
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var passport = __webpack_require__(7);
-var LocalStrategy = __webpack_require__(22).Strategy;
+var passport = __webpack_require__(2);
+var LocalStrategy = __webpack_require__(20).Strategy;
 
-var User = __webpack_require__(8);
+var User = __webpack_require__(3);
 
 module.exports = function () {
     passport.use(new LocalStrategy({
@@ -383,18 +212,135 @@ module.exports = function () {
 };
 
 /***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var router = __webpack_require__(0).Router();
+
+var Board = __webpack_require__(23);
+
+router.get("/getList", function (req, res) {
+    Board.find({}, res.return);
+});
+
+router.get("/:id", function (req, res) {
+    Board.findOne({ _id: req.params.id }, res.return);
+});
+
+router.delete("/:id", function (req, res, next) {
+    Board.deleteOne({ _id: req.params.id }, res.return);
+});
+
+router.put("/:id", function (req, res) {
+    Board.update({ _id: req.params.id }, req.body, res.return);
+});
+
+router.post("/insert", function (req, res) {
+    var board = new Board(Object.assign({}, req.body, {
+        regDate: new Date()
+    }));
+
+    board.save(res.return);
+});
+
+module.exports = router;
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var router = __webpack_require__(0).Router();
+
+router.get("/ok", function (req, res, next) {
+    res.ok();
+});
+
+router.get("/forbidden", function (req, res) {
+    res.forbidden();
+});
+
+router.get("/error", function (req, res) {
+    res.error({ message: "error!" });
+});
+
+module.exports = router;
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var passport = __webpack_require__(2);
+var path = __webpack_require__(1);
+var router = __webpack_require__(0).Router();
+
+var User = __webpack_require__(3);
+var upload = __webpack_require__(24);
+
+router.post('/join', function (req, res) {
+    new User(Object.assign({}, req.body, {
+        state: "REG",
+        userType: "NORMAL",
+        regDt: new Date()
+    })).save(res.return);
+});
+
+// router.post('/join', upload.single('photo'), function (req, res, next) {
+//
+//     new User({
+//         ...req.body,
+//         state: "REG",
+//         userType: "NORMAL",
+//         regDt: new Date()
+//     }).save(err => {
+//         res.json({
+//             status: !err,
+//             message: err && err.message
+//         });
+//     });
+//
+//     res.json({file: req.files[0], body: req.body})
+// });
+
+
+router.post('/login', function (req, res) {
+    passport.authenticate('local', function (err, user, info) {
+        err && res.error(err);
+        !user && res.error({ message: "password" });
+
+        req.logIn(user, function (err) {
+            err && res.error(err);
+            res.json({ user: user.forClient() });
+        });
+    })(req, res);
+});
+
+router.all("/logout", function (req, res) {
+    res.json(req.logout());
+});
+
+/* GET user by ID. */
+router.all('/currentUser', function (req, res) {
+    res.json(req.isAuthenticated() ? { user: req.user.forClient() } : undefined);
+});
+
+/* GET user by ID. */
+router.get("/test", function (req, res) {
+    res.json(req.user || req.user.forClient() && "none");
+});
+
+module.exports = router;
+
+/***/ }),
 /* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
 
-var config = __webpack_require__(4);
-var db = __webpack_require__(13)();
-var app = __webpack_require__(14)();
+var config = __webpack_require__(6);
+var app = __webpack_require__(13)();
 
 app.listen(config.port, config.host, function () {
     console.log("SERVER INIT");
-    console.log(123);
 });
 
 console.log('Server listening on ' + config.host + ':' + config.port);
@@ -403,50 +349,15 @@ console.log('Server listening on ' + config.host + ':' + config.port);
 /* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var mongoose = __webpack_require__(5);
-var autoIncrement = __webpack_require__(6);
-var config = __webpack_require__(4);
-
-function init(db) {
-    mongoose.connect(config.db.url);
-    db = mongoose.connection;
-
-    autoIncrement.initialize(db);
-
-    db.on('error', function (e) {
-        return console.log(e);
-    });
-
-    db.once('open', function () {
-        console.log("Connected to mongo server");
-    });
-}
-
-module.exports = function () {
-    var db = void 0;
-
-    mongoose.Promise = global.Promise;
-
-    mongoose.connection.readyState === 1 || init(db);
-
-    return db;
-};
-
-/***/ }),
-/* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(__dirname) {var _require = __webpack_require__(15),
+/* WEBPACK VAR INJECTION */(function(__dirname) {var _require = __webpack_require__(14),
     Builder = _require.Builder,
     Nuxt = _require.Nuxt;
 
-var session = __webpack_require__(16);
-var bodyParser = __webpack_require__(17);
+var session = __webpack_require__(15);
+var bodyParser = __webpack_require__(16);
 var express = __webpack_require__(0);
-var serveStatic = __webpack_require__(18);
-var path = __webpack_require__(9);
-
-var config = __webpack_require__(4);
+var serveStatic = __webpack_require__(17);
+var path = __webpack_require__(1);
 
 function initMiddleware(app) {
     app.use(bodyParser.urlencoded({ extended: true }));
@@ -459,15 +370,15 @@ function initSession(app) {
 }
 
 function initAuth(app) {
-    __webpack_require__(19)(app);
+    __webpack_require__(18)(app);
 }
 
 function initRouter(app) {
-    __webpack_require__(1)(app);
+    __webpack_require__(21)(app);
 }
 
 function initNuxt(app) {
-    var nuxtConfig = __webpack_require__(27);
+    var nuxtConfig = __webpack_require__(29);
     nuxtConfig.dev = !("development" === 'production');
 
     var nuxt = new Nuxt(nuxtConfig);
@@ -480,9 +391,14 @@ function initNuxt(app) {
     app.use(nuxt.render);
 }
 
+function initMongoose() {
+    __webpack_require__(30)();
+}
+
 module.exports = function () {
     var app = express();
 
+    initMongoose();
     initMiddleware(app);
     initSession(app);
     initAuth(app);
@@ -494,37 +410,38 @@ module.exports = function () {
 /* WEBPACK VAR INJECTION */}.call(exports, "server\\init"))
 
 /***/ }),
-/* 15 */
+/* 14 */
 /***/ (function(module, exports) {
 
 module.exports = require("nuxt");
 
 /***/ }),
-/* 16 */
+/* 15 */
 /***/ (function(module, exports) {
 
 module.exports = require("express-session");
 
 /***/ }),
-/* 17 */
+/* 16 */
 /***/ (function(module, exports) {
 
 module.exports = require("body-parser");
 
 /***/ }),
-/* 18 */
+/* 17 */
 /***/ (function(module, exports) {
 
 module.exports = require("serve-static");
 
 /***/ }),
-/* 19 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(__dirname) {var passport = __webpack_require__(7);
+/* WEBPACK VAR INJECTION */(function(__dirname) {var passport = __webpack_require__(2);
+var path = __webpack_require__(1);
+var fs = __webpack_require__(7);
 
-var utils = __webpack_require__(10);
-var User = __webpack_require__(8);
+var User = __webpack_require__(3);
 
 function initPassport(app) {
     app.use(passport.initialize());
@@ -532,13 +449,12 @@ function initPassport(app) {
 }
 
 function initAllStrategies() {
-    utils.getFiles(__dirname + "/strategies/").forEach(function (file) {
-        __webpack_require__(21)("./" + file)();
+    fs.readdirSync(path.join(__dirname, "..", "auth", "strategies")).forEach(function (file) {
+        __webpack_require__(19)("./" + file)();
     });
 }
 
 function initSerialize() {
-
     // done({}, user) => req.session.passport.user = user
     passport.serializeUser(function (user, done) {
         done(null, user.forClient());
@@ -554,21 +470,94 @@ module.exports = function (app) {
     initAllStrategies();
     initSerialize();
 };
-/* WEBPACK VAR INJECTION */}.call(exports, "server\\auth"))
+/* WEBPACK VAR INJECTION */}.call(exports, "server\\init"))
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var map = {
+	"./local": 8,
+	"./local.js": 8
+};
+function webpackContext(req) {
+	return __webpack_require__(webpackContextResolve(req));
+};
+function webpackContextResolve(req) {
+	var id = map[req];
+	if(!(id + 1)) // check for number or string
+		throw new Error("Cannot find module '" + req + "'.");
+	return id;
+};
+webpackContext.keys = function webpackContextKeys() {
+	return Object.keys(map);
+};
+webpackContext.resolve = webpackContextResolve;
+module.exports = webpackContext;
+webpackContext.id = 19;
 
 /***/ }),
 /* 20 */
 /***/ (function(module, exports) {
 
-module.exports = require("fs");
+module.exports = require("passport-local");
 
 /***/ }),
 /* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
+/* WEBPACK VAR INJECTION */(function(__dirname) {var express = __webpack_require__(0);
+var path = __webpack_require__(1);
+var fs = __webpack_require__(7);
+
+function useApiAll(app) {
+    fs.readdirSync(path.join(__dirname, "..", "..", "api")).forEach(function (file) {
+        var moduleName = file.substr(0, file.indexOf(".js"));
+
+        console.log("app.use(\"/" + moduleName + "\"), require(\"../../api/" + file + "\")");
+        app.use("/" + moduleName, __webpack_require__(22)("./" + file));
+    });
+}
+
+function errorHandle(app) {
+
+    __webpack_require__(26)(app);
+}
+
+function loggingRequest(app) {
+    __webpack_require__(27).requestLog(app);
+}
+
+function initMyMiddleware(app) {
+    app.use(__webpack_require__(28).response);
+}
+
+function getApp() {
+    var app = express();
+    loggingRequest(app);
+    initMyMiddleware(app);
+    useApiAll(app);
+    errorHandle(app);
+
+    return app;
+}
+
+module.exports = function (app) {
+    return app.use("/api", getApp());
+};
+/* WEBPACK VAR INJECTION */}.call(exports, "server\\init\\api"))
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports, __webpack_require__) {
+
 var map = {
-	"./local": 11,
-	"./local.js": 11
+	"./board": 9,
+	"./board.js": 9,
+	"./test": 10,
+	"./test.js": 10,
+	"./user": 11,
+	"./user.js": 11
 };
 function webpackContext(req) {
 	return __webpack_require__(webpackContextResolve(req));
@@ -584,53 +573,14 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = 21;
-
-/***/ }),
-/* 22 */
-/***/ (function(module, exports) {
-
-module.exports = require("passport-local");
+webpackContext.id = 22;
 
 /***/ }),
 /* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var map = {
-	"./": 1,
-	"./board": 2,
-	"./board/": 2,
-	"./board/index": 2,
-	"./board/index.js": 2,
-	"./index": 1,
-	"./index.js": 1,
-	"./user": 3,
-	"./user/": 3,
-	"./user/index": 3,
-	"./user/index.js": 3
-};
-function webpackContext(req) {
-	return __webpack_require__(webpackContextResolve(req));
-};
-function webpackContextResolve(req) {
-	var id = map[req];
-	if(!(id + 1)) // check for number or string
-		throw new Error("Cannot find module '" + req + "'.");
-	return id;
-};
-webpackContext.keys = function webpackContextKeys() {
-	return Object.keys(map);
-};
-webpackContext.resolve = webpackContextResolve;
-module.exports = webpackContext;
-webpackContext.id = 23;
-
-/***/ }),
-/* 24 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var mongoose = __webpack_require__(5);
-var autoIncrement = __webpack_require__(6);
+var mongoose = __webpack_require__(4);
+var autoIncrement = __webpack_require__(5);
 
 var BoardSchema = mongoose.Schema({
     title: {
@@ -661,11 +611,11 @@ var Board = mongoose.model("Board", BoardSchema);
 module.exports = Board;
 
 /***/ }),
-/* 25 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var multer = __webpack_require__(26);
+var multer = __webpack_require__(25);
 // const upload = multer({dest: "../../uploads"})
 
 
@@ -693,13 +643,84 @@ var upload = multer({
 module.exports = upload;
 
 /***/ }),
-/* 26 */
+/* 25 */
 /***/ (function(module, exports) {
 
 module.exports = require("multer");
 
 /***/ }),
+/* 26 */
+/***/ (function(module, exports) {
+
+
+
+module.exports = function (app) {
+
+    app.use(function (err, req, res, next) {
+        if (!err) next();
+
+        console.log("************************************************************************");
+        console.log("  500 / " + err.message + "  ");
+
+        res.Error();
+    });
+
+    app.use(function (req, res) {
+        console.log("************************************************************************");
+        console.log("      404 NOT_FOUND          ");
+
+        res.sendStatus(404);
+    });
+};
+
+/***/ }),
 /* 27 */
+/***/ (function(module, exports) {
+
+module.exports = {
+    requestLog: function requestLog(app) {
+        app.use("/", function (req, res, next) {
+            console.log("************************************************************************");
+            console.log("user : " + JSON.stringify(req.user) + " ");
+            console.log("query : " + JSON.stringify(req.query) + " & params : " + JSON.stringify(req.params) + " & body : " + JSON.stringify(req.body));
+            console.log("method : " + req.method + " & url : " + req.url);
+            console.log("time : " + new Date());
+
+            next();
+        });
+    }
+};
+
+/***/ }),
+/* 28 */
+/***/ (function(module, exports) {
+
+
+
+module.exports = {
+    response: function response(req, res, next) {
+        res.ok = function () {
+            return res.sendStatus(200);
+        };
+        res.notFound = function () {
+            return res.sendStatus(404);
+        };
+        res.error = function (err) {
+            return err && err.message ? res.status(500).json(err.message) : res.sendStatus(500);
+        };
+        res.forbidden = function () {
+            return res.sendStatus(403);
+        };
+        res.return = function (err, result) {
+            return err ? res.error(err) : res.json(result);
+        };
+
+        next();
+    }
+};
+
+/***/ }),
+/* 29 */
 /***/ (function(module, exports) {
 
 module.exports = {
@@ -718,12 +739,44 @@ module.exports = {
     },
     plugins: ['~/plugins/vuetify.js'],
     css: ['~/assets/style/app.styl'],
-    // css: ['~/assets/css/main.css'],
     loading: { color: '#060580' },
     build: {
         vendor: ['axios', '~/plugins/vuetify.js', 'vue2-medium-editor'],
         extractCSS: true
     }
+};
+
+/***/ }),
+/* 30 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var mongoose = __webpack_require__(4);
+var autoIncrement = __webpack_require__(5);
+var config = __webpack_require__(6);
+
+function init(db) {
+    mongoose.connect(config.db.url);
+    db = mongoose.connection;
+
+    autoIncrement.initialize(db);
+
+    db.on('error', function (e) {
+        return console.log(e);
+    });
+
+    db.once('open', function () {
+        console.log("Connected to mongo server");
+    });
+}
+
+module.exports = function () {
+    var db = void 0;
+
+    mongoose.Promise = global.Promise;
+
+    mongoose.connection.readyState === 1 || init(db);
+
+    return db;
 };
 
 /***/ })

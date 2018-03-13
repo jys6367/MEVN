@@ -25,7 +25,6 @@ module.exports = {
         '~/plugins/vuetify.js',
     ],
     css: ['~/assets/style/app.styl'],
-    // css: ['~/assets/css/main.css'],
     loading: {color: '#060580'},
     build: {
         vendor: [
