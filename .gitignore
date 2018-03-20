@@ -4,3 +4,4 @@ node_modules/
 server/config/
 server/public/
 build/
+.idea
