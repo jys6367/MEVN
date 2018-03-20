@@ -1,7 +1,7 @@
 
 node_modules/
 .nuxt
-server/config/
-server/public/
+server/config/*
+server/public/*
 build/
 .idea
